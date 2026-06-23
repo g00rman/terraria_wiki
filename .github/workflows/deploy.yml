@@ -1,0 +1,25 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~terraria_wiki
+            git pull
+            docker build -t terraria-wiki .
+            docker stop terraria-wiki || true
+            docker rm terraria-wiki || true
+            docker run -d --name terraria-wiki -p 80:80 --restart unless-stopped terraria-wiki
