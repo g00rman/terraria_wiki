@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terraria Wiki UA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090F;--surface:#0D1220;--card:#131A28;--card2:#1A2436;
+  --b:#1E2C42;--bl:#2A3F5E;--t:#DCE4F2;--tm:#6A7E9A;--td:#36485E;
+  --ac:#3E8DCC;--acd:#1E4D78;--gr:#42C46E;--or:#CC7830;--rd:#C43838;--pu:#784EC0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bl);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:var(--acd)}
+html,body{min-height:100vh;background:var(--bg);color:var(--t);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(7,9,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--b);height:58px;padding:0 20px;display:flex;align-items:center;gap:16px}
+.logo{font-family:'Pixelify Sans',monospace;font-size:20px;font-weight:700;color:var(--ac);white-space:nowrap;text-shadow:0 0 24px rgba(62,141,204,.5);flex-shrink:0;letter-spacing:.4px;user-select:none;cursor:pointer}
+.logo em{color:var(--gr);font-style:normal}
+.nav-wrapper{flex:1;position:relative;overflow:hidden;height:40px}
+.nav-track{display:flex;gap:3px;align-items:center;position:absolute;left:0;top:50%;transition:transform .38s cubic-bezier(.4,0,.2,1),opacity .35s ease;white-space:nowrap;will-change:transform}
+.nav-main{transform:translateY(-50%);opacity:1;pointer-events:all}
+.nav-sub{transform:translateY(-50%) translateX(110%);opacity:0;pointer-events:none}
+.nav-wrapper.expanded .nav-main{transform:translateY(-50%) translateX(-110%);opacity:0;pointer-events:none}
+.nav-wrapper.expanded .nav-sub{transform:translateY(-50%) translateX(0);opacity:1;pointer-events:all}
+.nbtn{font-family:'Pixelify Sans',monospace;font-size:12.5px;font-weight:500;color:var(--tm);background:none;border:1px solid transparent;border-radius:6px;padding:5px 12px;cursor:pointer;transition:all .18s;letter-spacing:.3px;white-space:nowrap}
+.nbtn:hover{color:var(--t);background:var(--card);border-color:var(--b)}
+.nbtn.active{color:var(--ac);background:rgba(62,141,204,.1);border-color:var(--acd)}
+.nbtn.sub-on{color:var(--gr);background:rgba(66,196,110,.08);border-color:rgba(66,196,110,.25)}
+.nbtn.back{color:var(--tm);padding-left:8px}
+.nbtn.back::before{content:'← '}
+.nav-sep{width:1px;background:var(--b);height:20px;flex-shrink:0;margin:0 3px}
+.search-box{position:relative;flex-shrink:0}
+#srch{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:7px 12px 7px 32px;color:var(--t);font-family:'Inter',sans-serif;font-size:13px;width:190px;outline:none;transition:all .22s}
+#srch::placeholder{color:var(--td)}
+#srch:focus{border-color:var(--acd);width:250px;background:var(--surface);box-shadow:0 0 0 2px rgba(62,141,204,.12)}
+.search-box::before{content:'⌕';position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--td);pointer-events:none;font-size:16px;line-height:1}
+
+/* MAIN */
+main{max-width:1380px;margin:0 auto;padding:22px 20px;min-height:calc(100vh - 58px)}
+.ph{margin-bottom:20px}
+.pt{font-family:'Pixelify Sans',monospace;font-size:26px;font-weight:700;line-height:1.2}
+.pt span{color:var(--ac)}
+.ps{font-size:13px;color:var(--tm);margin-top:3px}
+.badge{display:inline-block;background:var(--card);border:1px solid var(--b);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--tm);font-family:'Pixelify Sans',monospace;margin-left:8px;letter-spacing:.4px;vertical-align:middle}
+
+/* FILTER CHIPS */
+.frow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.fc{font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:500;padding:4px 11px;border-radius:5px;border:1px solid var(--b);background:var(--card);color:var(--tm);cursor:pointer;transition:all .16s;letter-spacing:.3px}
+.fc:hover{background:var(--card2);color:var(--t);border-color:var(--bl)}
+.fc.on{background:rgba(62,141,204,.12);color:var(--ac);border-color:var(--acd)}
+.fc.on-g{background:rgba(66,196,110,.1);color:var(--gr);border-color:rgba(66,196,110,.3)}
+.fsep{width:1px;background:var(--b);height:20px;margin:0 2px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:10px}
+
+/* ITEM CARD */
+.ic{background:var(--card);border:1px solid var(--b);border-radius:9px;padding:13px;cursor:pointer;transition:background .18s,border-color .18s,transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.ic::after{content:'';position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:2px;background:var(--rc,#ACACAC)}
+.ic:hover{background:var(--card2);border-color:var(--bl);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.ii{width:46px;height:46px;border-radius:7px;background:var(--surface);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:9px}
+.iname{font-family:'Pixelify Sans',monospace;font-size:11.5px;font-weight:600;color:var(--t);line-height:1.3;margin-bottom:3px}
+.ien{font-size:10px;color:var(--td);font-style:italic;margin-bottom:6px}
+.itags{display:flex;flex-wrap:wrap;gap:3px}
+.tag{font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px}
+.tc{background:rgba(62,141,204,.12);color:var(--ac);border:1px solid rgba(62,141,204,.2)}
+.tp{background:rgba(120,78,192,.12);color:#9A6EDA;border:1px solid rgba(120,78,192,.2)}
+.tu{background:rgba(66,196,110,.1);color:var(--gr);border:1px solid rgba(66,196,110,.2)}
+.ts{background:rgba(204,120,48,.1);color:var(--or);border:1px solid rgba(204,120,48,.2)}
+.istat{font-size:11px;color:var(--tm);margin-top:5px}.istat strong{color:var(--t)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(6px)}
+.overlay.open{opacity:1;pointer-events:all}
+.mbox{background:var(--surface);border:1px solid var(--bl);border-radius:14px;width:580px;max-width:calc(100vw - 32px);max-height:calc(100vh - 60px);overflow-y:auto;padding:24px;transform:scale(.96) translateY(8px);transition:transform .2s;position:relative}
+.overlay.open .mbox{transform:scale(1) translateY(0)}
+.mcl{position:absolute;top:14px;right:14px;background:var(--card);border:1px solid var(--b);border-radius:6px;color:var(--tm);width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s;z-index:5}
+.mcl:hover{background:var(--card2);color:var(--t)}
+.mhdr{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.mbig{width:68px;height:68px;border-radius:11px;background:var(--card);border:2px solid var(--bl);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.mtitles{flex:1}
+.mname{font-family:'Pixelify Sans',monospace;font-size:18px;font-weight:700;line-height:1.2}
+.men{font-size:12px;color:var(--tm);font-style:italic;margin-top:2px}
+.rtag{display:inline-block;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-top:7px;font-family:'Pixelify Sans',monospace;border:1px solid currentColor;background:rgba(0,0,0,.4)}
+.msec{margin-top:14px}
+.msec h4{font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--tm);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.si{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:9px 11px}
+.sl{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--tm);margin-bottom:2px}
+.sv{font-size:17px;font-weight:700;font-family:'Pixelify Sans',monospace;color:var(--t)}
+.sv.g{color:var(--gr)}.sv.r{color:var(--rd)}.sv.b{color:var(--ac)}.sv.o{color:var(--or)}
+.dbox{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:11px;font-size:13px;color:var(--tm);line-height:1.6;font-style:italic}
+.tipbox{border-left:3px solid var(--acd);padding:7px 11px;font-size:12px;color:var(--tm);font-style:italic;margin-top:8px}
+.rbox{background:var(--card);border:1px solid var(--b);border-radius:8px;padding:11px}
+.rstn{font-size:11px;color:var(--tm);margin-bottom:9px}
+.rflow{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.ri{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--b);border-radius:5px;padding:5px 8px;font-size:12px;cursor:pointer;transition:all .15s}
+.ri:hover{border-color:var(--bl)}
+.riamt{font-weight:700;color:var(--ac);font-size:10px}
+.rarrow{color:var(--td);font-size:16px}
+.rres{background:rgba(62,141,204,.1);border:1px solid var(--acd);border-radius:5px;padding:5px 9px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+
+/* CRAFTS */
+.clist{display:flex;flex-direction:column;gap:10px}
+.cc{background:var(--card);border:1px solid var(--b);border-radius:9px;padding:14px 16px;cursor:pointer;transition:all .18s}
+.cc:hover{background:var(--card2);border-color:var(--bl)}
+.cch{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.cci{width:42px;height:42px;background:var(--surface);border:1px solid var(--b);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ccn{font-family:'Pixelify Sans',monospace;font-size:14px;font-weight:600}
+.ccs{font-size:11px;color:var(--tm);margin-top:2px}
+.cflow{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.cchip{display:flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--b);border-radius:5px;padding:4px 8px;font-size:12px}
+.camt{font-weight:700;color:var(--ac);font-size:10px}
+.cdesc{font-size:11px;color:var(--tm);margin-top:8px;font-style:italic}
+
+/* ACHIEVEMENTS */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.ac2{background:var(--card);border:1px solid var(--b);border-radius:9px;padding:13px 14px;display:flex;gap:11px;align-items:flex-start;transition:all .18s}
+.ac2:hover{background:var(--card2);border-color:var(--bl)}
+.ai{width:42px;height:42px;background:var(--surface);border:1px solid var(--b);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.acont{flex:1}
+.an{font-family:'Pixelify Sans',monospace;font-size:12.5px;font-weight:700;margin-bottom:3px}
+.ad{font-size:12px;color:var(--tm);line-height:1.5;margin-bottom:7px}
+.ah{font-size:11px;color:var(--gr);background:rgba(66,196,110,.08);border:1px solid rgba(66,196,110,.18);border-radius:5px;padding:5px 9px;line-height:1.4}
+.ah::before{content:'✓ ';font-weight:700}
+.adiff{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.6px;display:inline-block;margin-top:6px}
+.de{background:rgba(66,196,110,.15);color:var(--gr)}
+.dm{background:rgba(204,120,48,.15);color:var(--or)}
+.dh{background:rgba(196,56,56,.15);color:var(--rd)}
+.dx{background:rgba(120,78,192,.15);color:#9A6EDA}
+
+/* BOSSES */
+.bl{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:start}
+.bsb{background:var(--card);border:1px solid var(--b);border-radius:10px;overflow:hidden;position:sticky;top:76px;max-height:calc(100vh - 100px);overflow-y:auto}
+.bsbh{padding:10px 14px;font-family:'Pixelify Sans',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--tm);background:var(--surface);border-bottom:1px solid var(--b)}
+.bslbl{padding:6px 14px 3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--td)}
+.bsdiv{border:none;border-top:1px solid var(--b);margin:2px 0}
+.bi{padding:7px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tm)}
+.bi:hover{background:var(--card2);color:var(--t)}
+.bi.on{background:rgba(62,141,204,.1);color:var(--ac)}
+.bico{font-size:16px;width:20px;text-align:center}
+.bdet{background:var(--card);border:1px solid var(--b);border-radius:10px;overflow:hidden}
+.bhero{background:linear-gradient(135deg,var(--surface) 0%,var(--card) 100%);padding:24px;border-bottom:1px solid var(--b);display:flex;gap:18px;align-items:flex-start}
+.bbig{width:88px;height:88px;background:var(--bg);border:2px solid var(--bl);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0}
+.bmeta{flex:1}
+.bname{font-family:'Pixelify Sans',monospace;font-size:24px;font-weight:700;line-height:1.2}
+.bnen{font-size:13px;color:var(--tm);font-style:italic;margin-top:2px}
+.bph{display:inline-block;padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-top:8px;font-family:'Pixelify Sans',monospace}
+.bpr{background:rgba(66,196,110,.12);color:var(--gr);border:1px solid rgba(66,196,110,.25)}
+.bhm{background:rgba(204,120,48,.12);color:var(--or);border:1px solid rgba(204,120,48,.25)}
+.bsr{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.bchp{background:var(--surface);border:1px solid var(--b);border-radius:5px;padding:3px 9px;font-size:11px;color:var(--tm)}
+.bchp strong{color:var(--t);font-family:'Pixelify Sans',monospace}
+.bsum{background:rgba(66,196,110,.07);border:1px solid rgba(66,196,110,.18);border-radius:7px;padding:11px 14px;font-size:13px;color:var(--tm);margin:16px}
+.batk{padding:0 16px 12px}
+.ba{background:rgba(196,56,56,.07);border:1px solid rgba(196,56,56,.18);border-radius:6px;padding:7px 11px;font-size:12px;color:var(--tm);margin-bottom:6px}
+.ba strong{color:#DC7070;font-size:12px}
+.bdrop{padding:0 16px 14px}
+.dlist{display:flex;flex-wrap:wrap;gap:6px}
+.dch{background:var(--surface);border:1px solid var(--b);border-radius:5px;padding:4px 9px;font-size:12px}
+.ctabs{display:flex;background:var(--surface);border-bottom:1px solid var(--b)}
+.ctab{flex:1;padding:11px 8px;text-align:center;cursor:pointer;font-family:'Pixelify Sans',monospace;font-size:11.5px;font-weight:600;color:var(--tm);border-bottom:2px solid transparent;transition:all .16s;display:flex;align-items:center;justify-content:center;gap:5px}
+.ctab:hover{color:var(--t)}
+.ctab.on[data-c=melee]{color:#DC5050;border-bottom-color:#DC5050;background:rgba(220,80,80,.05)}
+.ctab.on[data-c=ranged]{color:#50CC50;border-bottom-color:#50CC50;background:rgba(80,204,80,.05)}
+.ctab.on[data-c=magic]{color:#8060D0;border-bottom-color:#8060D0;background:rgba(128,96,208,.05)}
+.ctab.on[data-c=summon]{color:#D0B000;border-bottom-color:#D0B000;background:rgba(208,176,0,.05)}
+.gg{padding:18px}
+.gs{margin-bottom:16px}
+.gs h4{font-family:'Pixelify Sans',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--tm);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b)}
+.gchips{display:flex;flex-wrap:wrap;gap:6px}
+.gch{background:var(--surface);border:1px solid var(--b);border-radius:5px;padding:4px 9px;font-size:12px;color:var(--t)}
+.gstr{font-size:13px;color:var(--tm);line-height:1.7;background:var(--surface);border:1px solid var(--b);border-radius:7px;padding:13px}
+
+/* EMPTY */
+.empty{text-align:center;padding:70px 20px;color:var(--tm)}
+.empty-ico{font-size:42px;margin-bottom:14px;opacity:.4}
+.empty h3{font-family:'Pixelify Sans',monospace;font-size:17px;color:var(--t);margin-bottom:7px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.grid>*{animation:fadeUp .28s ease both}
+.agrid>*{animation:fadeUp .28s ease both}
+.clist>*{animation:fadeUp .28s ease both}
+.grid>*:nth-child(1){animation-delay:.02s}.grid>*:nth-child(2){animation-delay:.04s}.grid>*:nth-child(3){animation-delay:.06s}.grid>*:nth-child(4){animation-delay:.08s}.grid>*:nth-child(n+5){animation-delay:.1s}
+.agrid>*:nth-child(1){animation-delay:.02s}.agrid>*:nth-child(2){animation-delay:.04s}.agrid>*:nth-child(3){animation-delay:.06s}.agrid>*:nth-child(n+4){animation-delay:.08s}
+
+/* SEARCH HIGHLIGHT */
+.hl{background:rgba(62,141,204,.25);border-radius:2px;padding:0 2px}
+
+/* SECTION LABEL */
+.slbl{font-family:'Pixelify Sans',monospace;font-size:13px;color:var(--tm);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:8px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--b)}
+
+@media(max-width:760px){
+  header{padding:0 12px;gap:10px}.logo{font-size:16px}
+  #srch{width:120px}#srch:focus{width:160px}
+  main{padding:14px 12px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr))}
+  .bl{grid-template-columns:1fr}.bsb{position:static;max-height:none}
+  .sgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" onclick="setSection('items')">⚒️ <em>Terraria</em> Wiki</div>
+  <div class="nav-wrapper" id="nw">
+    <div class="nav-track nav-main" id="nm">
+      <button class="nbtn active" data-s="items" onclick="setSection('items')">Предмети</button>
+      <button class="nbtn" data-s="crafts" onclick="setSection('crafts')">Крафти</button>
+      <button class="nbtn" data-s="achievements" onclick="setSection('achievements')">Досягнення</button>
+      <button class="nbtn" data-s="bosses" onclick="setSection('bosses')">Гайди до Босів</button>
+    </div>
+    <div class="nav-track nav-sub" id="ns"></div>
+  </div>
+  <div class="search-box">
+    <input type="text" id="srch" placeholder="Пошук..." oninput="handleSearch(this.value)" autocomplete="off">
+  </div>
+</header>
+<main id="root"></main>
+<div class="overlay" id="ov" onclick="closeOv(event)">
+  <div class="mbox" id="mb"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════
+const RC=['#ACACAC','#7070E0','#44C044','#E08800','#D84040','#C044C0','#C89800','#00B8CC','#A00000','#FF4400'];
+const RN=['Звичайна','Незвичайна','Рідкісна','Дуже рідкісна','Дуже цінна','Квест','Розробник','Майстер','Легендарна','Веселкова'];
+const CAT={block:'Блок',ore:'Руда',weapon:'Зброя',armor:'Броня',tool:'Інструмент',consumable:'Зілля',accessory:'Аксесуар',furniture:'Меблі',ammo:'Боєприпаси'};
+const SUB={melee:'Ближній',ranged:'Дальній',magic:'Магія',summon:'Призов',heal:'Відновлення',buff:'Баф',utility:'Утиліт'};
+const STN={handcraft:'Вручну',workbench:'Верстак',anvil:'Ковадло',furnace:'Піч',mythril_anvil:'Мітрил. ковадло',lihzahrd:'Маніпулятор',alchemy:'Алхімічний стіл',crystal_ball:'Кришт. куля'};
+const SUBNAV={
+  items:[{id:'all',l:'Всі'},{id:'block',l:'🧱 Блоки'},{id:'ore',l:'⛏️ Руди'},{id:'consumable',l:'🧪 Зілля'},{id:'armor',l:'🛡️ Броня'},{id:'weapon',l:'⚔️ Зброя'},{id:'tool',l:'🔧 Інструменти'},{id:'accessory',l:'💍 Аксесуари'},{id:'furniture',l:'🪑 Меблі'}],
+  crafts:[{id:'all',l:'Всі'},{id:'handcraft',l:'✋ Вручну'},{id:'workbench',l:'🪵 Верстак'},{id:'anvil',l:'⚒️ Ковадло'},{id:'furnace',l:'🔥 Піч'},{id:'mythril_anvil',l:'⚒️ Міт.Ковадло'},{id:'lihzahrd',l:'🏛️ Маніпулятор'}],
+  bosses:[{id:'all',l:'Всі'},{id:'prehardmode',l:'🌱 Пре-Хардмод'},{id:'hardmode',l:'🔥 Хардмод'}]
+};
+
+// ══════════════════════════════════════════════
+//  ITEMS DATABASE
+// ══════════════════════════════════════════════
+const ITEMS=[
+// BLOCKS
+{id:1,name:'Блок бруду',en:'Dirt Block',icon:'🟫',cat:'block',type:'placeable',rar:0,stack:999,tip:'Просто бруд.',desc:'Найпоширеніший блок у грі. Знаходиться близько до поверхні. Легко видобувається будь-яким інструментом.',stats:{},tags:['природній','базовий']},
+{id:2,name:'Кам\'яний блок',en:'Stone Block',icon:'🪨',cat:'block',type:'placeable',rar:0,stack:999,tip:'Просто камінь.',desc:'Дуже поширений блок. Знаходиться нижче бруду. Основний матеріал для крафту кам\'яних предметів.',stats:{},tags:['природній','базовий','крафт']},
+{id:3,name:'Деревина',en:'Wood',icon:'🌲',cat:'block',type:'both',rar:0,stack:999,tip:'Зрубані з дерева.',desc:'Базовий матеріал для будівництва та крафту. Отримується зрубуванням звичайних дерев на поверхні.',stats:{},tags:['природній','крафт','будівництво']},
+{id:4,name:'Пісок',en:'Sand Block',icon:'🟡',cat:'block',type:'placeable',rar:0,stack:999,tip:'Обережно — падає!',desc:'Підпорядковується гравітації. Знаходиться в пустелях та на пляжах. Може заховати гравця.',stats:{},tags:['природній','гравітація','пустеля']},
+{id:5,name:'Ебонстон',en:'Ebonstone Block',icon:'🟣',cat:'block',type:'placeable',rar:0,stack:999,tip:'Темна скеля зла.',desc:'Корупційний блок. Проходиться Кошмарною киркою або знищується Священним порошком / Вибухівкою.',stats:{},tags:['корупція','зло','пре-хардмод']},
+{id:6,name:'Кримстон',en:'Crimstone Block',icon:'🔴',cat:'block',type:'placeable',rar:0,stack:999,tip:'Скеля Багряниці.',desc:'Аналог Ебонстону для Багряниці. Зустрічається виключно в біомі Багряниця. Поширюється при Хардмоді.',stats:{},tags:['багряниця','зло','пре-хардмод']},
+{id:7,name:'Перловий камінь',en:'Pearlstone Block',icon:'⚪',cat:'block',type:'placeable',rar:0,stack:999,tip:'Сяє чистотою.',desc:'З\'являється у Святих Землях після активації Хардмоду. Основа біому Святих Земель. Нешкідливий.',stats:{},tags:['святі землі','хардмод','біом']},
+{id:8,name:'Цегла Ліхзахрда',en:'Lihzahrd Brick',icon:'🟤',cat:'block',type:'placeable',rar:0,stack:999,tip:'Стародавня.',desc:'Блок Храму Джунглів. Добувається лише киркою 210%+ сили. Дуже міцний, стійкий до вибухів.',stats:{},tags:['храм','джунглі','хардмод']},
+// ORES
+{id:10,name:'Мідна руда',en:'Copper Ore',icon:'🟠',cat:'ore',type:'placeable',rar:0,stack:999,tip:'',desc:'Найпоширеніша руда. Близько до поверхні. З 3 штук виплавляється 1 злиток. Замінюється Олов\'яною рудою.',stats:{},tags:['метал','базовий','поверхня']},
+{id:11,name:'Залізна руда',en:'Iron Ore',icon:'⬛',cat:'ore',type:'placeable',rar:0,stack:999,tip:'',desc:'Базова руда другого рівня. Замінюється Свинцевою рудою. Потрібна для більшості базових інструментів та ковадла.',stats:{},tags:['метал','базовий']},
+{id:12,name:'Срібна руда',en:'Silver Ore',icon:'🔘',cat:'ore',type:'placeable',rar:0,stack:999,tip:'',desc:'Руда середнього рівня. Замінюється Вольфрамовою. Дає гарну зброю та броню перед золотом.',stats:{},tags:['метал','середній']},
+{id:13,name:'Золота руда',en:'Gold Ore',icon:'🟡',cat:'ore',type:'placeable',rar:0,stack:999,tip:'',desc:'Найкраща базова руда. Замінюється Платиновою. Дає найкращі інструменти та броню до спеціальних руд.',stats:{},tags:['метал','цінний']},
+{id:14,name:'Демонітова руда',en:'Demonite Ore',icon:'🟣',cat:'ore',type:'placeable',rar:2,stack:999,tip:'Зло виходить з неї.',desc:'Знаходиться у Корупції та в дропі Пожирача Світу. З 4 штук — 1 демонітовий злиток для тіньової броні.',stats:{},tags:['корупція','рідкісний']},
+{id:15,name:'Кримтанова руда',en:'Crimtane Ore',icon:'🔴',cat:'ore',type:'placeable',rar:2,stack:999,tip:'Вібрує від сили Багряниці.',desc:'Аналог Демонітової руди для Багряниці. Випадає з Мозку Ктулху та знаходиться в Багряниці.',stats:{},tags:['багряниця','рідкісний']},
+{id:16,name:'Адський камінь',en:'Hellstone',icon:'🔥',cat:'ore',type:'placeable',rar:3,stack:999,tip:'Обпалює при дотику!',desc:'Цінніша руда пре-хардмоду. Знаходиться в Підземному Світі. Наносить шкоду від вогню без захисту.',stats:{},tags:['підземний світ','вогонь']},
+{id:17,name:'Кобальтова руда',en:'Cobalt Ore',icon:'🔵',cat:'ore',type:'placeable',rar:2,stack:999,tip:'Яскраво-синя.',desc:'Перша хардмодна руда. Замінюється Паладієвою. З\'являється після перемоги над Стіною Плоті.',stats:{},tags:['хардмод','перший рівень']},
+{id:18,name:'Мітрилова руда',en:'Mythril Ore',icon:'🟢',cat:'ore',type:'placeable',rar:2,stack:999,tip:'Зелений відблиск.',desc:'Хардмодна руда 2-го рівня. Замінюється Орихалковою. Потрібна Кобальтова/Паладієва кирка для видобутку.',stats:{},tags:['хардмод','другий рівень']},
+{id:19,name:'Адамантитова руда',en:'Adamantite Ore',icon:'🔴',cat:'ore',type:'placeable',rar:2,stack:999,tip:'Майже непробивна.',desc:'Хардмодна руда 3-го рівня. Замінюється Титанієвою. Потрібна Мітрилова/Орихалкова кирка.',stats:{},tags:['хардмод','третій рівень']},
+{id:20,name:'Хлорофітова руда',en:'Chlorophyte Ore',icon:'🌿',cat:'ore',type:'placeable',rar:3,stack:999,tip:'Росте в темряві.',desc:'Руда, що повільно росте в Підземних Джунглях. Потрібна Кирка-Сокира або Дракс (200%+) для видобутку.',stats:{},tags:['хардмод','джунглі','росте']},
+{id:21,name:'Люмінітова руда',en:'Luminite',icon:'⭐',cat:'ore',type:'placeable',rar:5,stack:999,tip:'Зоряне сяйво.',desc:'Найрідкісніша руда в грі. Падає виключно з Місячного Лорда. Потрібна для всього ендгейм-спорядження.',stats:{},tags:['ендгейм','місячний лорд']},
+// CONSUMABLES
+{id:30,name:'Менше зілля відновлення',en:'Lesser Healing Potion',icon:'🧪',cat:'consumable',subcat:'heal',type:'usable',rar:1,stack:30,tip:'Відновлює 50 HP.',desc:'Найслабше зілля відновлення. Знаходиться у скринях. Має 1-хвилинне охолодження після використання.',stats:{heal:50,cooldown:60},tags:['відновлення','хп','початок']},
+{id:31,name:'Зілля відновлення',en:'Healing Potion',icon:'🧪',cat:'consumable',subcat:'heal',type:'usable',rar:1,stack:30,tip:'Відновлює 100 HP.',desc:'Стандартне зілля. Купується у Торговця або крафтується. Незамінне в бою.',stats:{heal:100,cooldown:60},tags:['відновлення','хп']},
+{id:32,name:'Велике зілля відновлення',en:'Greater Healing Potion',icon:'🧪',cat:'consumable',subcat:'heal',type:'usable',rar:1,stack:30,tip:'Відновлює 150 HP.',desc:'Доступне в Хардмоді. Крафтується в Алхімічному столі або падає з сильних ворогів.',stats:{heal:150,cooldown:60},tags:['відновлення','хп','хардмод']},
+{id:33,name:'Супер зілля відновлення',en:'Super Healing Potion',icon:'🧪',cat:'consumable',subcat:'heal',type:'usable',rar:4,stack:30,tip:'Відновлює 200 HP.',desc:'Найсильніше зілля відновлення. Доступне після знищення Місячних Стовпів.',stats:{heal:200,cooldown:60},tags:['відновлення','ендгейм']},
+{id:34,name:'Зілля мани',en:'Mana Potion',icon:'🔵',cat:'consumable',subcat:'heal',type:'usable',rar:1,stack:30,tip:'Відновлює 100 MP.',desc:'Стандартне зілля мани. Купується у Торговця. Незамінне для магів у бою.',stats:{mana:100,cooldown:60},tags:['відновлення','мана','маг']},
+{id:35,name:'Зілля залізної шкіри',en:'Ironskin Potion',icon:'🟤',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'+8 до захисту на 8 хв.',desc:'Одне з найкорисніших бафових зіль. Крафтується з Залізних Водоростей та Пляшки з водою на Верстаку.',stats:{def:8,duration:480},tags:['баф','захист','корисний']},
+{id:36,name:'Зілля швидкості',en:'Swiftness Potion',icon:'🟢',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'+25% швидкість руху.',desc:'Збільшує швидкість пересування на 25% протягом 8 хвилин. Корисне при дослідженні підземель.',stats:{speed:25,duration:480},tags:['баф','швидкість']},
+{id:37,name:'Зілля витривалості',en:'Endurance Potion',icon:'🟠',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'-10% отримувана шкода.',desc:'Зменшує весь отримуваний урон на 10%. Незамінне під час боїв з босами.',stats:{dmgRed:10,duration:480},tags:['баф','захист','боси']},
+{id:38,name:'Зілля відваги',en:'Wrath Potion',icon:'🔴',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'+10% шкода.',desc:'Збільшує весь завданий урон на 10% протягом 8 хвилин. Добре поєднується з Зіллям Лютості.',stats:{dmg:10,duration:480},tags:['баф','атака','хардмод']},
+{id:39,name:'Зілля лютості',en:'Rage Potion',icon:'🟣',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'+10% крит. шанс.',desc:'Збільшує критичний шанс усіх атак на 10%. Комбінується з Зіллям Відваги для максимальної шкоди.',stats:{crit:10,duration:480},tags:['баф','крит','хардмод']},
+{id:40,name:'Зілля пошуку руд',en:'Spelunker Potion',icon:'🟡',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'Підсвічує скарби.',desc:'Підсвічує всі руди, скарби та спеціальні об\'єкти в радіусі огляду. Незамінне при видобутку.',stats:{duration:300},tags:['баф','пошук','видобуток']},
+{id:41,name:'Зілля гравітації',en:'Gravitation Potion',icon:'🌀',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'Перевертає гравітацію.',desc:'Дозволяє натисканням ↑ змінювати напрям гравітації. Корисне для пошуку Небесних Островів.',stats:{duration:180},tags:['баф','гравітація','дослідження']},
+{id:42,name:'Зілля телепортації',en:'Recall Potion',icon:'💨',cat:'consumable',subcat:'utility',type:'usable',rar:1,stack:20,tip:'Телепортує додому.',desc:'Миттєво телепортує гравця до точки появи або до встановленого ліжка. Рятівне в небезпечних ситуаціях.',stats:{},tags:['утиліт','телепортація']},
+{id:43,name:'Зілля нічного ока',en:'Night Owl Potion',icon:'🦉',cat:'consumable',subcat:'buff',type:'usable',rar:1,stack:30,tip:'Покращує нічний зір.',desc:'Збільшує дальність огляду вночі та в темних місцях. Корисне в підземних гротах та печерах.',stats:{duration:300},tags:['баф','зір']},
+// ARMOR
+{id:50,name:'Мідна броня',en:'Copper Armor',icon:'🛡️',cat:'armor',type:'usable',rar:0,stack:1,tip:'',desc:'Базовий комплект броні (шолом + нагрудник + поножі). Повний набір дає 6 захисту.',stats:{def:6,bonus:'Захист'},tags:['броня','набір','базовий']},
+{id:51,name:'Золота броня',en:'Gold Armor',icon:'🛡️',cat:'armor',type:'usable',rar:1,stack:1,tip:'',desc:'Найкраща базова металева броня. 11 захисту при повному наборі. Хороший вибір до Тіньової/Багряної броні.',stats:{def:11,bonus:'Захист'},tags:['броня','набір','золото']},
+{id:52,name:'Тіньова броня',en:'Shadow Armor',icon:'🟣',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Пре-хм броня Корупції. 19 захисту. Бонус набору: +15% швидкість атаки та руху. Виглядає круто.',stats:{def:19,bonus:'+15% швидк. атаки і руху'},tags:['броня','набір','корупція']},
+{id:53,name:'Багряна броня',en:'Crimson Armor',icon:'🔴',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Аналог Тіньової для Багряниці. 19 захисту. Бонус набору: прискорене відновлення HP.',stats:{def:19,bonus:'Прискорене відновлення HP'},tags:['броня','набір','багряниця']},
+{id:54,name:'Розплавлена броня',en:'Molten Armor',icon:'🔥',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Найкраща ближньобойова броня пре-хардмоду. 25 захисту. Бонус: +17% шкода ближнього бою.',stats:{def:25,bonus:'+17% шкода ближнього бою'},tags:['броня','набір','ближній']},
+{id:55,name:'Кобальтова броня',en:'Cobalt Armor',icon:'🔵',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Перша хардмодна броня. 20 захисту. Три варіанти шолому для різних класів.',stats:{def:20,bonus:'Залежить від шолому'},tags:['броня','набір','хардмод']},
+{id:56,name:'Мітрилова броня',en:'Mythril Armor',icon:'🟢',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Хардмодна броня 2-го рівня. 28 захисту. Бонус +9% шкода залежно від шолому.',stats:{def:28,bonus:'+9% шкода (від шолому)'},tags:['броня','набір','хардмод']},
+{id:57,name:'Адамантитова броня',en:'Adamantite Armor',icon:'🔴',cat:'armor',type:'usable',rar:2,stack:1,tip:'',desc:'Хардмодна броня 3-го рівня. 34 захисту. До +14% шкода та швидкість залежно від шолому.',stats:{def:34,bonus:'До +14% шкода (від шолому)'},tags:['броня','набір','хардмод']},
+{id:58,name:'Святобасна броня',en:'Hallowed Armor',icon:'⭐',cat:'armor',type:'usable',rar:3,stack:1,tip:'',desc:'Броня після мех-босів. 50 захисту. Унікальний ефект парирування або інших бонусів залежно від шолому.',stats:{def:50,bonus:'Парирування або бонус HP'},tags:['броня','набір','хардмод','пост-механіки']},
+{id:59,name:'Черепашача броня',en:'Turtle Armor',icon:'🐢',cat:'armor',type:'usable',rar:4,stack:1,tip:'',desc:'Броня для ближнього бою після Планери. 65 захисту. Відбиває 33% шкоди назад атакуючим.',stats:{def:65,bonus:'Відбиває 33% шкоди'},tags:['броня','набір','ближній','пост-планери']},
+{id:60,name:'Жукова броня',en:'Beetle Armor',icon:'🪲',cat:'armor',type:'usable',rar:4,stack:1,tip:'',desc:'Найкраща ближньобойова броня до ендгейму. 61 захисту. Два варіанти: жукові щити або стог.',stats:{def:61,bonus:'Жукові щити або стог'},tags:['броня','набір','ближній','найкраща']},
+{id:61,name:'Шрумітова броня',en:'Shroomite Armor',icon:'🍄',cat:'armor',type:'usable',rar:4,stack:1,tip:'',desc:'Найкраща броня дальнього бою до ендгейму. 57 захисту. Прихованість при стоянні на місці.',stats:{def:57,bonus:'Прихованість + бонус зброї'},tags:['броня','набір','дальній','найкраща']},
+{id:62,name:'Астральна броня сонця',en:'Solar Flare Armor',icon:'☀️',cat:'armor',type:'usable',rar:8,stack:1,tip:'',desc:'Найкраща броня ближнього бою в грі. 78 захисту. Силові сонячні щити поглинають шкоду.',stats:{def:78,bonus:'Силові сонячні щити'},tags:['броня','набір','ближній','ендгейм']},
+{id:63,name:'Небулярна броня',en:'Nebula Armor',icon:'🌌',cat:'armor',type:'usable',rar:8,stack:1,tip:'',desc:'Найкраща магічна броня в грі. 60 захисту. Накопичує підсилювачі HP, Мани і Шкоди.',stats:{def:60,bonus:'Небулярні підсилювачі'},tags:['броня','набір','магія','ендгейм']},
+{id:64,name:'Вортексна броня',en:'Vortex Armor',icon:'🌀',cat:'armor',type:'usable',rar:8,stack:1,tip:'',desc:'Найкраща броня дальнього бою в грі. 62 захисту. Маскування для посиленого крит. удару.',stats:{def:62,bonus:'Вортексне маскування'},tags:['броня','набір','дальній','ендгейм']},
+{id:65,name:'Зоряпиловий костюм',en:'Stardust Armor',icon:'✨',cat:'armor',type:'usable',rar:8,stack:1,tip:'',desc:'Найкраща призовна броня в грі. 38 захисту. Пасивний Зоряний Страж та підсилення міньйонів.',stats:{def:38,bonus:'Зоряний Страж + підсилення'},tags:['броня','набір','призов','ендгейм']},
+// MELEE WEAPONS
+{id:70,name:'Мідний короткий меч',en:'Copper Shortsword',icon:'🗡️',cat:'weapon',subcat:'melee',type:'usable',rar:0,stack:1,tip:'',desc:'Найслабша стартова зброя. Вколює пряму а не розмахується. Замініть якомога швидше.',stats:{dmg:7,spd:15,kb:2},tags:['ближній','початок']},
+{id:71,name:'Золотий широкий меч',en:'Gold Broadsword',icon:'⚔️',cat:'weapon',subcat:'melee',type:'usable',rar:0,stack:1,tip:'',desc:'Найкращий базовий меч з металів. Хороший до Нічного Краю або Зоряної Ярості.',stats:{dmg:17,spd:25,kb:5,crit:4},tags:['ближній','базовий']},
+{id:72,name:'Зоряна ярість',en:'Starfury',icon:'⭐',cat:'weapon',subcat:'melee',type:'usable',rar:2,stack:1,tip:'Призиває зорі з неба.',desc:'Знаходиться у скринях Небесних Островів. Кожен удар — зоря падає з неба. Один з кращих пре-хм мечів.',stats:{dmg:31,spd:30,kb:7,crit:4},tags:['ближній','небесні острови','особливий']},
+{id:73,name:'Мурамаса',en:'Muramasa',icon:'⚔️',cat:'weapon',subcat:'melee',type:'usable',rar:2,stack:1,tip:'Дуже швидкий меч.',desc:'Знаходиться у скринях Підземелля. Найшвидший меч пре-хардмоду. Ключовий компонент для Нічного Краю.',stats:{dmg:19,spd:14,kb:3,crit:4},tags:['ближній','підземелля','швидкий']},
+{id:74,name:'Нічний край',en:"Night's Edge",icon:'🌑',cat:'weapon',subcat:'melee',type:'usable',rar:3,stack:1,tip:'Темрява в металі.',desc:'Найкраща ближня зброя пре-хардмоду. Крафтується з 4 мечів. Компонент для Клинку Землі в Хардмоді.',stats:{dmg:42,spd:27,kb:4,crit:4},tags:['ближній','пре-хардмод','крафт']},
+{id:75,name:'Клинок землі',en:'Terra Blade',icon:'🌿',cat:'weapon',subcat:'melee',type:'usable',rar:5,stack:1,tip:'Сила зла і добра.',desc:'Один з кращих мечів Хардмоду. Стріляє зеленими клинками. Крафтується з двох Справжніх мечів на Мітриловому Ковадлі.',stats:{dmg:95,spd:28,kb:6,crit:14},tags:['ближній','хардмод','крафт']},
+{id:76,name:'Міяумер',en:'Meowmere',icon:'🐱',cat:'weapon',subcat:'melee',type:'usable',rar:8,stack:1,tip:'Кіт-меч!',desc:'Один з двох найсильніших мечів. Випадає з Місячного Лорда. Котячі снаряди відскакують від поверхонь.',stats:{dmg:200,spd:26,kb:6,crit:4},tags:['ближній','ендгейм','місячний лорд']},
+{id:77,name:'Зеніт',en:'Zenith',icon:'🌈',cat:'weapon',subcat:'melee',type:'usable',rar:10,stack:1,tip:'Найпотужніша зброя Terraria.',desc:'Абсолютна ендгейм-зброя. Крафтується з 9 різних мечів. Автоматично атакує ворогів у всіх напрямках.',stats:{dmg:190,spd:30,kb:6,crit:14},tags:['ближній','ендгейм','крафт','найкращий']},
+// RANGED WEAPONS
+{id:80,name:'Мідний лук',en:'Copper Bow',icon:'🏹',cat:'weapon',subcat:'ranged',type:'usable',rar:0,stack:1,tip:'',desc:'Найслабший лук. Замініть при першій нагоді. Потребує стрілок як боєприпасів.',stats:{dmg:6,spd:28,kb:2,crit:4},tags:['дальній','лук','початок']},
+{id:81,name:'Золотий лук',en:'Gold Bow',icon:'🏹',cat:'weapon',subcat:'ranged',type:'usable',rar:0,stack:1,tip:'',desc:'Найкращий базовий лук. Стріляє дещо швидше за срібний. Хороший до Демонічного або Жильового луку.',stats:{dmg:11,spd:22,kb:2,crit:4},tags:['дальній','лук','базовий']},
+{id:82,name:'Міні-акула',en:'Minishark',icon:'🦈',cat:'weapon',subcat:'ranged',type:'usable',rar:3,stack:1,tip:'50% шанс не витратити кулю.',desc:'Іконічний кулемет-риба. Купується у Торговця Зброєю за 35 золота. Висока швидкострільність.',stats:{dmg:6,spd:8,kb:1,crit:4},tags:['дальній','кулемет','куплений']},
+{id:83,name:'Мега-акула',en:'Megashark',icon:'🦈',cat:'weapon',subcat:'ranged',type:'usable',rar:4,stack:1,tip:'50% шанс не витратити кулю.',desc:'Покращена Міні-акула. Один з кращих кулеметів раннього Хардмоду. Крафтується з Міні-Акули.',stats:{dmg:25,spd:7,kb:2,crit:4},tags:['дальній','кулемет','хардмод']},
+{id:84,name:'Снайперська гвинтівка',en:'Sniper Rifle',icon:'🎯',cat:'weapon',subcat:'ranged',type:'usable',rar:4,stack:1,tip:'ПКМ для прицілювання.',desc:'Гвинтівка з найвищою шкодою за постріл. Падає зі Скелетів Снайперів у Підземеллі Хардмоду.',stats:{dmg:185,spd:55,kb:7,crit:29},tags:['дальній','гвинтівка','снайпер']},
+{id:85,name:'Фантазм',en:'Phantasm',icon:'🌙',cat:'weapon',subcat:'ranged',type:'usable',rar:8,stack:1,tip:'Стріли через час і простір.',desc:'Найкращий лук в грі. Стріляє 4 стрілами одночасно. Крафтується з 18 Місячних Фрагментів.',stats:{dmg:60,spd:11,kb:2,crit:4},tags:['дальній','лук','ендгейм']},
+// MAGIC WEAPONS
+{id:90,name:'Паличка іскор',en:'Wand of Sparking',icon:'✨',cat:'weapon',subcat:'magic',type:'usable',rar:0,stack:1,tip:'Стріляє іскрами.',desc:'Перша магічна зброя. Знаходиться у дерев\'яних скринях на поверхні.',stats:{dmg:11,mana:2,spd:30,kb:2,crit:4},tags:['магія','початок']},
+{id:91,name:'Водяний болт',en:'Water Bolt',icon:'💧',cat:'weapon',subcat:'magic',type:'usable',rar:2,stack:1,tip:'Відскакує від стін.',desc:'Знаходиться на книжкових полицях у Підземеллі. Водяні кулі відскакують від поверхонь. Дуже корисно.',stats:{dmg:17,mana:8,spd:30,kb:6,crit:4},tags:['магія','підземелля','відскакує']},
+{id:92,name:'Демонічний серп',en:'Demon Scythe',icon:'💀',cat:'weapon',subcat:'magic',type:'usable',rar:3,stack:1,tip:'Повільний але потужний.',desc:'Випадає з Демонів у Підземному Світі. Великий повільний снаряд наносить значну шкоду.',stats:{dmg:35,mana:14,spd:20,kb:6,crit:4},tags:['магія','підземний світ','серп']},
+{id:93,name:'Кристалічна буря',en:'Crystal Storm',icon:'💎',cat:'weapon',subcat:'magic',type:'usable',rar:4,stack:1,tip:'Кристальний хаос.',desc:'Швидкі кристальні снаряди, що відскакують. Хороша зброя для раннього та середнього Хардмоду.',stats:{dmg:50,mana:7,spd:10,kb:3,crit:4},tags:['магія','хардмод','швидкий']},
+{id:94,name:'Остання призма',en:'Last Prism',icon:'🌈',cat:'weapon',subcat:'magic',type:'usable',rar:8,stack:1,tip:'Увесь спектр.',desc:'Найпотужніша магічна зброя. Випадає з Місячного Лорда. Шість лазерів зливаються в один потужний промінь.',stats:{dmg:95,mana:33,spd:10,kb:0,crit:4},tags:['магія','ендгейм','місячний лорд']},
+// SUMMON WEAPONS
+{id:100,name:'Слаймовий жезл',en:'Slime Staff',icon:'💚',cat:'weapon',subcat:'summon',type:'usable',rar:1,stack:1,tip:'Призиває слайма.',desc:'Найслабша призовна зброя. Падає зі слаймів з дуже малим шансом. Корисний лише на початку гри.',stats:{dmg:10,mana:10,kb:2},tags:['призов','слайм','початок']},
+{id:101,name:'Жезл диявола',en:'Imp Staff',icon:'😈',cat:'weapon',subcat:'summon',type:'usable',rar:2,stack:1,tip:'Призиває диявола.',desc:'Перший гідний призовний жезл. Крафтується з 17 Адськокам\'яних злитків. Диявол кидає вогняні кулі.',stats:{dmg:35,mana:10,kb:2},tags:['призов','вогонь','крафт']},
+{id:102,name:'Павутинний жезл',en:'Spider Staff',icon:'🕷️',cat:'weapon',subcat:'summon',type:'usable',rar:3,stack:1,tip:'Призиває павука-воїна.',desc:'Ранній хм призовний жезл. Крафтується з Павучої Фанги. Павуки прилипають до стін та стель.',stats:{dmg:26,mana:10,kb:3},tags:['призов','хардмод','павук']},
+{id:103,name:'Жезл зоряного дракона',en:'Stardust Dragon Staff',icon:'🐉',cat:'weapon',subcat:'summon',type:'usable',rar:8,stack:1,tip:'Призиває дракона.',desc:'Один з найкращих призовних жезлів. Крафтується з 18 Зоряпилових Фрагментів. Дракон росте з кожним жезлом.',stats:{dmg:65,mana:10,kb:4},tags:['призов','ендгейм','дракон']},
+{id:104,name:'Тераприсма',en:'Terraprisma',icon:'🌈',cat:'weapon',subcat:'summon',type:'usable',rar:8,stack:1,tip:'Кришталеві серафіми.',desc:'Найсильніша призовна зброя (за DPS). Випадає з Цариці Світла ТІЛЬКИ ВДЕНЬ (100% шанс). Дуже швидкі серафіми.',stats:{dmg:90,mana:10,kb:4},tags:['призов','ендгейм','цариця світла']},
+// TOOLS
+{id:110,name:'Мідна кирка',en:'Copper Pickaxe',icon:'⛏️',cat:'tool',type:'usable',rar:0,stack:1,tip:'35% сила копання.',desc:'Перша кирка. 35% сила копання. Не може видобувати Ебонстон, Кримстон чи Адський камінь.',stats:{pick:35,dmg:4,spd:23},tags:['кирка','початок']},
+{id:111,name:'Золота кирка',en:'Gold Pickaxe',icon:'⛏️',cat:'tool',type:'usable',rar:0,stack:1,tip:'55% сила копання.',desc:'Може видобувати Метеоритний камінь. Хороша кирка до Кошмарної/Зниклої Кирки.',stats:{pick:55,dmg:6,spd:18},tags:['кирка','золото']},
+{id:112,name:'Кошмарна кирка',en:'Nightmare Pickaxe',icon:'⛏️',cat:'tool',type:'usable',rar:2,stack:1,tip:'70% сила копання.',desc:'Крафтується з Демонітових злитків. Може видобувати Адський камінь та Ебонстон. Необхідна для входу в Пекло.',stats:{pick:70,dmg:8,spd:18},tags:['кирка','корупція']},
+{id:113,name:'Розплавлена кирка',en:'Molten Pickaxe',icon:'🔥',cat:'tool',type:'usable',rar:2,stack:1,tip:'100% сила копання.',desc:'Найкраща кирка пре-хардмоду. 100% сила копання. Крафтується з 20 Адськокам\'яних злитків.',stats:{pick:100,dmg:14,spd:20},tags:['кирка','пре-хардмод']},
+{id:114,name:'Кобальтова кирка',en:'Cobalt Pickaxe',icon:'🔵',cat:'tool',type:'usable',rar:2,stack:1,tip:'110% сила копання.',desc:'Перша хардмодна кирка. 110% — може видобувати Мітрилову та Орихалкову руду.',stats:{pick:110,dmg:15,spd:20},tags:['кирка','хардмод']},
+{id:115,name:'Кирка-сокира',en:'Pickaxe Axe',icon:'🪓',cat:'tool',type:'usable',rar:4,stack:1,tip:'200% сила копання.',desc:'Може видобувати Хлорофітову руду та Лізахрд Цеглу. Крафтується після перемоги над Планерою.',stats:{pick:200,dmg:40,spd:15},tags:['кирка-сокира','хардмод']},
+{id:116,name:'Люмінітова кирка',en:'Luminite Pickaxe',icon:'⭐',cat:'tool',type:'usable',rar:8,stack:1,tip:'225% сила копання.',desc:'Найкраща кирка в грі. 225% сила копання. Крафтується з 18 Люмінітових злитків на Маніпуляторі.',stats:{pick:225,dmg:90,spd:10},tags:['кирка','ендгейм']},
+// ACCESSORIES
+{id:120,name:'Чоботи Гермеса',en:'Hermes Boots',icon:'👟',cat:'accessory',type:'usable',rar:2,stack:1,tip:'Швидкий як вітер.',desc:'Знаходиться в підземних скринях. Після 1.5 сек. бігу — максимальна швидкість. Ключовий компонент для кращих чобіт.',stats:{spd:true},tags:['аксесуар','швидкість','підземелля']},
+{id:121,name:'Чоботи привида',en:'Spectre Boots',icon:'👟',cat:'accessory',type:'usable',rar:3,stack:1,tip:'Бігти і летіти.',desc:'Поєднання Чобіт Гермеса та Флігелю. Максимальна швидкість + короткий політ.',stats:{spd:true,fly:1},tags:['аксесуар','швидкість','польот']},
+{id:122,name:'Чоботи терраіскри',en:'Terraspark Boots',icon:'⚡',cat:'accessory',type:'usable',rar:5,stack:1,tip:'Вода, лава, кригольод.',desc:'Найкращі чоботи в грі. Максимальна швидкість, польот, ходіння по воді/лаві/кризі, захист від заморожування.',stats:{spd:true,fly:3},tags:['аксесуар','швидкість','польот','лава']},
+{id:123,name:'Стрічка відновлення',en:'Band of Regeneration',icon:'💍',cat:'accessory',type:'usable',rar:1,stack:1,tip:'Повільно відновлює HP.',desc:'Знаходиться в підземних скринях. Дає +0.5 HP/сек відновлення. Компонент для потужніших аксесуарів.',stats:{regen:0.5},tags:['аксесуар','відновлення']},
+{id:124,name:'Крила янгола',en:'Angel Wings',icon:'🪽',cat:'accessory',type:'usable',rar:3,stack:1,tip:'Короткий політ.',desc:'Базові крила Хардмоду. Крафтуються з 10 Пір\'їн, 25 Шовку та Паразонтика. Дають 1.67 сек польоту.',stats:{fly:1.67},tags:['аксесуар','польот','крила']},
+{id:125,name:'Небесний зореборд',en:'Celestial Starboard',icon:'🌟',cat:'accessory',type:'usable',rar:8,stack:1,tip:'Безмежний політ.',desc:'Найкращі крила в грі. Випадають з Місячного Лорда. Необмежений час польоту та режим ховеру.',stats:{fly:999},tags:['аксесуар','польот','ендгейм']},
+// FURNITURE
+{id:130,name:'Верстак',en:'Work Bench',icon:'🪵',cat:'furniture',type:'placeable',rar:0,stack:99,tip:'Для основного крафту.',desc:'Перший і найважливіший крафтовий стіл. Крафтується з 10 дерев\'яних блоків без жодної станції.',stats:{},tags:['меблі','крафт']},
+{id:131,name:'Залізне ковадло',en:'Iron Anvil',icon:'⚒️',cat:'furniture',type:'placeable',rar:0,stack:99,tip:'Для металевих виробів.',desc:'Другий ключовий крафтовий стіл. Крафтується з 5 залізних злитків на Верстаку. Для зброї та броні.',stats:{},tags:['меблі','крафт','метал']},
+{id:132,name:'Піч',en:'Furnace',icon:'🔥',cat:'furniture',type:'placeable',rar:0,stack:99,tip:'Виплавляє руди.',desc:'Виплавляє всі базові руди в злитки. Крафтується з 20 каменів, 4 дерева та факела на Верстаку.',stats:{},tags:['меблі','крафт','плавлення']},
+{id:133,name:'Пекельна кузня',en:'Hellforge',icon:'🔴',cat:'furniture',type:'placeable',rar:2,stack:99,tip:'Кована в пеклі.',desc:'Оновлена піч. Знаходиться в Підземному Світі. Виплавляє Адськокам\'яні злитки та хардмод-руди.',stats:{},tags:['меблі','крафт','підземний світ']},
+{id:134,name:'Майстерня механіка',en:"Tinkerer's Workshop",icon:'🔧',cat:'furniture',type:'placeable',rar:2,stack:99,tip:'Комбінує аксесуари.',desc:'Купується у Гобліна Механіка після його порятунку. Дозволяє комбінувати аксесуари в потужніші.',stats:{},tags:['меблі','крафт','аксесуари']},
+];
+
+// ══════════════════════════════════════════════
+//  CRAFTS DATABASE
+// ══════════════════════════════════════════════
+const CRAFTS=[
+{id:1,res:'Верстак',ri:'🪵',amt:1,stn:'handcraft',si:'✋',ing:[{n:'Деревина',ic:'🌲',a:10}],desc:'Перший предмет — без станції!'},
+{id:2,res:'Залізне ковадло',ri:'⚒️',amt:1,stn:'workbench',si:'🪵',ing:[{n:'Залізний злиток',ic:'⬜',a:5}],desc:'Для металевих предметів та зброї.'},
+{id:3,res:'Піч',ri:'🔥',amt:1,stn:'workbench',si:'🪵',ing:[{n:'Кам\'яний блок',ic:'🪨',a:20},{n:'Деревина',ic:'🌲',a:4},{n:'Факел',ic:'🔦',a:1}],desc:'Для виплавлення руд.'},
+{id:4,res:'Мідний злиток',ri:'🟠',amt:1,stn:'furnace',si:'🔥',ing:[{n:'Мідна руда',ic:'🟠',a:3}],desc:'Базовий злиток.'},
+{id:5,res:'Залізний злиток',ri:'⬜',amt:1,stn:'furnace',si:'🔥',ing:[{n:'Залізна руда',ic:'⬛',a:3}],desc:'Основний ранній злиток.'},
+{id:6,res:'Золотий злиток',ri:'🟡',amt:1,stn:'furnace',si:'🔥',ing:[{n:'Золота руда',ic:'🟡',a:3}],desc:'Кращий базовий злиток.'},
+{id:7,res:'Демонітовий злиток',ri:'🟣',amt:1,stn:'furnace',si:'🔥',ing:[{n:'Демонітова руда',ic:'🟣',a:4}],desc:'Для тіньової броні та Нічного Краю.'},
+{id:8,res:'Адськокам\'яний злиток',ri:'🔥',amt:1,stn:'furnace',si:'🔥',ing:[{n:'Адський камінь',ic:'🔥',a:3},{n:'Обсидіан',ic:'⬛',a:1}],desc:'Потрібна Пекельна кузня!'},
+{id:9,res:"Нічний край",ri:'🌑',amt:1,stn:'anvil',si:'⚒️',ing:[{n:'Мурамаса',ic:'⚔️',a:1},{n:'Кривавий клинок',ic:'🗡️',a:1},{n:'Клинок трави',ic:'🌿',a:1},{n:'Вогняний великий меч',ic:'🔥',a:1}],desc:'Найкраща пре-хм зброя ближнього бою.'},
+{id:10,res:'Розплавлена кирка',ri:'⛏️',amt:1,stn:'anvil',si:'⚒️',ing:[{n:'Адськокам\'яний злиток',ic:'🔥',a:20}],desc:'100% — видобуває все в пре-хм.'},
+{id:11,res:'Жезл диявола',ri:'😈',amt:1,stn:'anvil',si:'⚒️',ing:[{n:'Адськокам\'яний злиток',ic:'🔥',a:17}],desc:'Перший гідний призовний жезл.'},
+{id:12,res:'Зілля залізної шкіри',ri:'🟤',amt:1,stn:'workbench',si:'🪵',ing:[{n:'Залізні водорості',ic:'🌿',a:1},{n:'Пляшка з водою',ic:'💧',a:1}],desc:'+8 до захисту на 8 хвилин.'},
+{id:13,res:'Зілля відновлення',ri:'🧪',amt:1,stn:'workbench',si:'🪵',ing:[{n:'Рожевий гель',ic:'💗',a:1},{n:'Гриб',ic:'🍄',a:2},{n:'Пляшка',ic:'🫙',a:1}],desc:'Стандартне відновлення HP.'},
+{id:14,res:'Крила янгола',ri:'🪽',amt:1,stn:'anvil',si:'⚒️',ing:[{n:"Пір'я",ic:'🪶',a:10},{n:'Шовк',ic:'🧵',a:25},{n:'Паразонтик',ic:'☂️',a:1}],desc:'Базові крила Хардмоду.'},
+{id:15,res:'Мега-акула',ri:'🦈',amt:1,stn:'anvil',si:'⚒️',ing:[{n:'Міні-акула',ic:'🦈',a:1},{n:'Акулій плавник',ic:'🦈',a:5},{n:'Заборонена зіпсована слизь',ic:'💚',a:1},{n:'Душа Механіки',ic:'⚙️',a:20}],desc:'Краща гвинтівка раннього Хм.'},
+{id:16,res:'Клинок землі',ri:'🌿',amt:1,stn:'mythril_anvil',si:'⚒️',ing:[{n:'Справжній нічний край',ic:'🌑',a:1},{n:'Справжній Екскалібур',ic:'⚔️',a:1}],desc:'Один з найкращих мечів у грі.'},
+{id:17,res:'Зеніт',ri:'🌈',amt:1,stn:'mythril_anvil',si:'⚒️',ing:[{n:'Клинок землі',ic:'🌿',a:1},{n:'Зоряна ярість',ic:'⭐',a:1},{n:'Інфернальний ятаган',ic:'🗡️',a:1},{n:'Мурамаса',ic:'⚔️',a:1},{n:'Нічний край',ic:'🌑',a:1},{n:'Лезо захисника',ic:'⚔️',a:1},{n:'Ятаган молоді',ic:'🗡️',a:1},{n:'Кривавий Харвестер',ic:'⚔️',a:1},{n:'Міяумер',ic:'🐱',a:1}],desc:'Абсолютна найпотужніша зброя в грі.'},
+{id:18,res:'Зоряпиловий костюм (шолом)',ri:'✨',amt:1,stn:'lihzahrd',si:'🏛️',ing:[{n:'Зоряпиловий фрагмент',ic:'✨',a:12}],desc:'Найкраща призовна броня.'},
+{id:19,res:'Жезл зоряного дракона',ri:'🐉',amt:1,stn:'lihzahrd',si:'🏛️',ing:[{n:'Зоряпиловий фрагмент',ic:'✨',a:18}],desc:''},
+{id:20,res:'Остання призма',ri:'🌈',amt:1,stn:'lihzahrd',si:'🏛️',ing:[{n:'Люмінітовий злиток',ic:'⭐',a:6},{n:'Фрагмент кожного стовпа',ic:'🔮',a:7}],desc:'Найпотужніша магічна зброя.'},
+{id:21,res:'Астральна броня сонця (шолом)',ri:'☀️',amt:1,stn:'lihzahrd',si:'🏛️',ing:[{n:'Люмінітовий злиток',ic:'⭐',a:12},{n:'Сонячний фрагмент',ic:'☀️',a:10}],desc:'Найкраща броня ближнього бою.'},
+{id:22,res:'Чоботи привида',ri:'👟',amt:1,stn:'workbench',si:'🔧',ing:[{n:'Чоботи Гермеса',ic:'👟',a:1},{n:'Флігель',ic:'🪶',a:1}],desc:'Потрібна Майстерня механіка!'},
+{id:23,res:'Кирка-сокира',ri:'🪓',amt:1,stn:'mythril_anvil',si:'⚒️',ing:[{n:'Хлорофітовий злиток',ic:'🌿',a:18},{n:'Адамантитовий злиток',ic:'🔴',a:4},{n:'Титанієвий злиток',ic:'⬜',a:4}],desc:'200% — Хлорофіт і Лізахрд Цегла.'},
+{id:24,res:'Майстерня механіка',ri:'🔧',amt:1,stn:'workbench',si:'🪵',ing:[{n:'Деревина',ic:'🌲',a:10},{n:'Залізний злиток',ic:'⬜',a:2},{n:'Мідний злиток',ic:'🟠',a:6}],desc:'Потрібен Гоблін Механік.'},
+{id:25,res:'Розплавлена броня (нагрудник)',ri:'🛡️',amt:1,stn:'anvil',si:'⚒️',ing:[{n:'Адськокам\'яний злиток',ic:'🔥',a:20}],desc:'Найкраща броня пре-хм.'},
+];
+
+// ══════════════════════════════════════════════
+//  ACHIEVEMENTS DATABASE
+// ══════════════════════════════════════════════
+const ACHS=[
+{id:1,name:'Деревороб',en:'Timber!!',icon:'🌲',desc:'Зруби своє перше дерево.',how:'Зрубай будь-яке дерево за допомогою сокири.',diff:'e',cat:'exp'},
+{id:2,name:'Перший верстак',en:'Benched',icon:'🪵',desc:'Створи свій перший верстак.',how:'Зроби Верстак з 10 дерев\'яних блоків. Перший предмет в грі.',diff:'e',cat:'craft'},
+{id:3,name:'Виживець',en:'You Can Do It!',icon:'🌙',desc:'Пережи першу ніч.',how:'Дочекайся ранку (4:30) пережившись у першу ніч.',diff:'e',cat:'exp'},
+{id:4,name:'Я — скарб!',en:'I Am Loot!',icon:'📦',desc:'Знайди золоту скриню в підземеллі.',how:'Опустися в підземелля до рівня Камінь та відкрий будь-яку золоту скриню.',diff:'e',cat:'exp'},
+{id:5,name:'На дно',en:'Rock Bottom',icon:'🌋',desc:'Дістанься дна світу.',how:'Копай прямо вниз до рівня Підземного Світу (Пекла).',diff:'m',cat:'exp'},
+{id:6,name:'Гарячий матеріал',en:'Miner for Fire',icon:'🔥',desc:'Видобудь адський камінь.',how:'Дістанься Підземного Світу та видобудь Адський Камінь киркою 70%+.',diff:'m',cat:'exp'},
+{id:7,name:'Знищуй, паппет!',en:'Smashing, Poppet!',icon:'💎',desc:'Розбий Сферу Тіні або Серце Ктулху.',how:'Знайди та знищ перший Скверний Шар чи Кримтанове Серце молотком.',diff:'m',cat:'misc'},
+{id:8,name:'Слизовий ніндзя',en:'Slippery Shinobi',icon:'👑',desc:'Переможи Короля Слаймів.',how:'Виклич Слаймовою Короною або дочекайся його появи при масовому слайм-івенті.',diff:'e',cat:'boss'},
+{id:9,name:'Погляд Ктулху',en:'Eye on You',icon:'👁️',desc:'Переможи Жах Ктулху.',how:'Виклич Підозрілим Оком вночі або він сам з\'явиться після 200 HP.',diff:'e',cat:'boss'},
+{id:10,name:'Корм для хробаків',en:'Worm Fodder',icon:'🐛',desc:'Переможи Пожирача Світів.',how:'Знищ 3 Сфери Тіні або використай Гнилу Наживку вночі в Корупції.',diff:'m',cat:'boss'},
+{id:11,name:'Майстер думок',en:'Mastermind',icon:'🧠',desc:'Переможи Мозок Ктулху.',how:'Знищ 3 Кримтанових Серця або використай Криваву Рибку в Багряниці.',diff:'m',cat:'boss'},
+{id:12,name:'Операція Жало',en:'Sting Operation',icon:'🐝',desc:'Переможи Королеву Бджіл.',how:'Знайди Вулик Джунглів та виклич Аектусом або знищ Личинку.',diff:'m',cat:'boss'},
+{id:13,name:'Скелетний бал',en:'Boned',icon:'💀',desc:'Переможи Скелетрона.',how:'Вночі поговори з Старим біля входу в Підземелля та переможи Скелетрона.',diff:'m',cat:'boss'},
+{id:14,name:'Стіна бронзи',en:'Wall of Bronze',icon:'🔥',desc:'Переможи Стіну Плоті.',how:'Кинь Ляльку Гіда у лаву Підземного Світу та знищ Стіну Плоті.',diff:'h',cat:'boss'},
+{id:15,name:'Все ще голодний',en:'Still Hungry',icon:'🌈',desc:'Активував Хардмод.',how:'Та сама дія — перемога над Стіною Плоті активує Хардмод.',diff:'h',cat:'misc'},
+{id:16,name:'Близнята',en:'Doubles',icon:'👀',desc:'Переможи Близнят.',how:'Виклич Механічним Оком або вони самі з\'являться вночі в Хардмоді.',diff:'h',cat:'boss'},
+{id:17,name:'Механічна загроза',en:'The Great Southern Plantkill',icon:'⚡',desc:'Переможи Знищувача.',how:'Виклич Механічним Черв\'яком або він з\'явиться самостійно вночі.',diff:'h',cat:'boss'},
+{id:18,name:'Небезпека прайм',en:'Prime Time',icon:'💣',desc:'Переможи Скелетрона Прайм.',how:'Виклич Механічним Черепом або вночі в Хардмоді.',diff:'h',cat:'boss'},
+{id:19,name:'Слуга-початківець',en:'Servant-in-Training',icon:'🌺',desc:'Переможи Планеру.',how:'Знайди Цибулину Планери в Підземних Джунглях після перемоги над мех-босами.',diff:'h',cat:'boss'},
+{id:20,name:'Є хтось там?',en:'There Are Some Who Call Him',icon:'🏛️',desc:'Переможи Голема.',how:'Знайди Храм Джунглів та використай Лізахрд-Силовий Камінь на вівтарі.',diff:'h',cat:'boss'},
+{id:21,name:'Риба не у воді',en:'Fish Out of Water',icon:'🐡',desc:'Переможи Герцога Риброна.',how:'Виклич Бурховою Приманкою рибалячи в Океані в Хардмоді.',diff:'h',cat:'boss'},
+{id:22,name:'Яскрава сторона',en:'Bright Side',icon:'🦋',desc:'Переможи Царицю Світла вдень.',how:'Виклич Прищмачем Метеликів та бийся ТІЛЬКИ ВДЕНЬ. Нагорода: Тераприсма!',diff:'x',cat:'boss'},
+{id:23,name:'Обманщик простаків',en:'Deceiver of Fools',icon:'🏮',desc:'Переможи Фанатичного Культиста.',how:'Знищ культистів біля Входу в Підземелля після перемоги над Големом.',diff:'h',cat:'boss'},
+{id:24,name:'Чемпіон Terraria',en:'Champion of Terraria',icon:'🌙',desc:'Переможи Місячного Лорда.',how:'Переможи всіх 4 Місячних Стовпів і зачекай появи Місячного Лорда.',diff:'x',cat:'boss'},
+{id:25,name:'Модник',en:'Fashion Statement',icon:'👔',desc:'Одягни всі три слоти зовнішнього вигляду.',how:'Одягни будь-який предмет у кожен з трьох соціальних слотів спорядження.',diff:'e',cat:'misc'},
+{id:26,name:'Голова в хмарах',en:'Head in the Clouds',icon:'🪽',desc:'Одягни пару крил.',how:'Знайди або скрафти будь-які крила і одягни в слот аксесуара.',diff:'m',cat:'misc'},
+{id:27,name:'Абсолютно дивовижна',en:'Completely Awesome',icon:'🦈',desc:'Отримай Міні-акулу.',how:'Купи Міні-акулу у Торговця Зброєю за 35 золота.',diff:'m',cat:'misc'},
+{id:28,name:'Дивись під ноги',en:'Watch Your Step!',icon:'💥',desc:'Загинь від пастки.',how:'Потрапи під стрілу, вогонь або іншу пастку в підземних руїнах.',diff:'e',cat:'misc'},
+{id:29,name:'Бульдозер',en:'Bulldozer',icon:'🚧',desc:'Знищ 10 000 тайлів.',how:'Просто копай. Прийде саме по собі за кілька годин гри.',diff:'e',cat:'misc'},
+{id:30,name:'Туди й назад',en:'To Hell and Back',icon:'🔙',desc:'Побував у Підземному Світі й повернувся.',how:'Опустися до рівня Пекла та повернися на поверхню живим.',diff:'m',cat:'exp'},
+{id:31,name:'Хочу меду',en:"Where's My Honey?",icon:'🍯',desc:'Знайди Вулик Джунглів.',how:'Дослідж Підземні Джунглі та знайди кімнату з медом та Личинкою Бджоли.',diff:'m',cat:'exp'},
+{id:32,name:'Дракс атакує',en:'Drax Attax',icon:'🪓',desc:'Скрафти Дракс.',how:'Переможи всіх мех-босів та скрафти Дракс з Адамантиту/Титану і Душ механіки.',diff:'h',cat:'craft'},
+{id:33,name:'Транспортний злочин',en:'Vehicular Manslaughter',icon:'🚂',desc:'Вбий ворога мінекартом.',how:'Прокатися на Mine-Cart через ворога достатньою швидкістю на рейках.',diff:'e',cat:'misc'},
+{id:34,name:'На орбіту',en:'Into Orbit',icon:'🚀',desc:'Злети дуже високо.',how:'Злети на висоту Космосу (800+ тайлів). Можна з Гравітаційним зіллям.',diff:'m',cat:'exp'},
+{id:35,name:'Геній рибальства',en:'Skilled Angler',icon:'🎣',desc:'Виконай 200 квестів рибалки.',how:'Щодня виконуй квести Рибалки — він може знаходитися в будь-якому Океані.',diff:'x',cat:'misc'},
+];
+
+// ══════════════════════════════════════════════
+//  BOSSES DATABASE
+// ══════════════════════════════════════════════
+const BOSSES=[
+{id:1,name:'Король Слаймів',en:'King Slime',icon:'💙',phase:'pre',hp:{n:2000,e:2800,m:3500},def:0,summon:'Слаймова Корона',cond:'Використай Слаймову Корону будь-коли, або він сам з\'явиться під час масової появи слаймів.',desc:'Найлегший бос. Гігантський синій слайм, що поглинає ніндзю при 50% HP.',atk:['Стрибок на гравця — намагається роздавити','Породжує малих блакитних і рожевих слаймів','Телепортація як ніндзя після 50% HP'],drops:['Слаймова Корона','Тінь Гель (15-30)','Мана Кристал (5)','Гачок Нінджі','Рибальський Кошик'],g:{melee:{ar:'Золота або Срібна броня',wp:['Золотий широкий меч','Зоряна ярість (якщо знайдено)'],ac:['Чоботи Гермеса','Стрічка відновлення'],st:'Тримайся на рівній ділянці та бий між стрибками. Коли стане нінджею — атакуй відразу після телепортації. Уникай стрибків зверху.'},ranged:{ar:'Срібна або Золота броня',wp:['Золотий лук + Срібні стріли'],ac:['Чоботи Гермеса'],st:'Тримайся збоку або зверху, стріляй постійно. Простий бос для дальнього бою — просто не підходь впритул.'},magic:{ar:'Золота броня',wp:['Паличка іскор','Громова хвиля (якщо є)'],ac:['Стрічка відновлення'],st:'Тримайся на відстані та постійно стріляй. Стеж за запасом мани — май зілля мани при собі.'},summon:{ar:'Будь-яка доступна броня',wp:['Слаймовий жезл (якщо є)','Золотий меч'],ac:['Чоботи Гермеса'],st:'Призов поки що слабкий — допомагай атакою ближньої зброї. Тримайся рухливо та уникай стрибків.'}}},
+{id:2,name:'Жах Ктулху',en:'Eye of Cthulhu',icon:'👁️',phase:'pre',hp:{n:2800,e:3640,m:4550},def:0,summon:'Підозріле Око',cond:'Використай Підозріве Око вночі або він з\'явиться самостійно (30% шанс щоночі) після 200 HP гравця.',desc:'Гігантське очне яблуко. Фаза 2 відкриває пащу та дашить значно швидше.',atk:['Рух по колу та дашинг до гравця (Фаза 1)','Відкрита паща + стрімкі даші + слуги (Фаза 2)'],drops:['Демонітові або Кримтанові руди (30-87)','Тканина Черепа','Бадьоре Нечестя (зілля)'],g:{melee:{ar:'Тіньова або Багряна броня',wp:['Нічний Край або Золотий меч'],ac:['Чоботи Гермеса','Обсидіановий щит'],st:'Фаза 1: тримайся на рівній ділянці та бий, коли він наближається. Фаза 2: тримайся збоку та уникай дашей — він стає набагато швидшим. Ніколи не стій нерухомо.'},ranged:{ar:'Срібна або Золота броня',wp:['Золотий лук + Вогняні/Кришталеві стріли'],ac:['Чоботи Гермеса','Стрічка відновлення'],st:'Будуй довгу платформу для бою. Стріляй у Фазі 1, а у Фазі 2 — уникай дашів та стріляй між ними.'},magic:{ar:'Тіньова броня',wp:['Водяний Болт — відскакує від підлоги','Паличка іскор'],ac:['Стрічка відновлення'],st:'Водяний Болт чудово відскакує від підлоги. Тримайся на платформах та стріляй безперервно.'},summon:{ar:'Тіньова броня',wp:['Жезл диявола (якщо є)','Золота зброя ближнього бою'],ac:['Чоботи Гермеса'],st:'Диявол б\'є автоматично. Самому лишається уникати дашів — допомагай ближньою зброєю.'}}},
+{id:3,name:'Пожирач Світів',en:'Eater of Worlds',icon:'🐛',phase:'pre',hp:{n:7485,e:11000,m:13750},def:2,summon:'Гнила Наживка',cond:'Знищ 3 Сфери Тіні в Корупції або використай Гнилу Наживку на Гнилому Алтарі.',desc:'Гігантський черв — бос Корупції. Кожен сегмент — ціль. При розрізанні виходять менші черви.',atk:['Переслідування гравця крізь блоки','Народжує менших хробаків при розрізанні'],drops:['Демонітова руда (70-90)','Кулі Тіні (100)','Гнилозубий меч'],g:{melee:{ar:'Тіньова броня',wp:['Нічний Край або Золотий меч'],ac:['Чоботи Гермеса','Обсидіановий щит'],st:'Будуй довгі горизонтальні платформи. Атакуй голову або хвіст — вони вразливіші. Не розрізай тіло навмисно, щоб не множити черв\'яків.'},ranged:{ar:'Тіньова або Золота броня',wp:['Мушкет + Кулі Мушкета','Срібні стріли + Лук'],ac:['Чоботи Гермеса'],st:'Стрільба в голову або хвіст максимально ефективна. Платформи ідеально підходять для уникнення тіла.'},magic:{ar:'Тіньова броня',wp:['Водяний Болт — ідеально відскакує','Пластинчастий вибух'],ac:['Стрічка відновлення'],st:'Водяний Болт — ідеальна зброя. Відскакує та б\'є по кількох сегментах одночасно.'},summon:{ar:'Тіньова броня',wp:['Жезл диявола','Зброя ближнього бою'],ac:['Чоботи Гермеса'],st:'Диявол б\'є автоматично. Сам атакуй голову рукопашною для пришвидшення.'}}},
+{id:4,name:'Мозок Ктулху',en:'Brain of Cthulhu',icon:'🧠',phase:'pre',hp:{n:1000,e:1400,m:1750},def:0,summon:'Кривава Рибка',cond:'Знищ 3 Кримтанових Серця в Багряниці або використай Криваву Рибку.',desc:'Бос Багряниці. Фаза 1: оточений Creeper\'ами, що захищають. Фаза 2: стає прозорим та телепортується.',atk:['Creeper\'и атакують гравця (Фаза 1)','Телепортується та стає напівпрозорим (Фаза 2)'],drops:['Кримтанова руда (60-80)','Тканина Мозку','Кривавий Хмурний Клинок'],g:{melee:{ar:'Багряна або Тіньова броня',wp:['Золотий меч','Нічний Край (якщо є)'],ac:['Чоботи Гермеса'],st:'Спочатку знищ ВСІХ Creeper\'ів — вони вразливі й атакують по черзі. У Фазі 2 стеж за Мозком по ауреолі та атакуй відразу після телепортації.'},ranged:{ar:'Срібна або Золота броня',wp:['Золотий лук + Вогняні стріли'],ac:['Чоботи Гермеса'],st:'Creeper\'и легко знищуються луком. Після їх загибелі — стріляй в Мозок одразу після кожної телепортації.'},magic:{ar:'Тіньова броня',wp:['Водяний Болт','Паличка іскор'],ac:['Стрічка відновлення'],st:'Зосередь магію на Creeper\'ах. У Фазі 2 — наближайся та атакуй впритул через прозорість.'},summon:{ar:'Будь-яка доступна',wp:['Жезл диявола','Золота зброя ближнього бою'],ac:['Чоботи Гермеса'],st:'Диявол б\'є по Creeper\'ах автоматично. Сам уникай та добивай вручну.'}}},
+{id:5,name:'Королева Бджіл',en:'Queen Bee',icon:'🐝',phase:'pre',hp:{n:3400,e:4760,m:5950},def:8,summon:'Аектус',cond:'Знайди Вулик Джунглів і знищ Личинку або використай Аектус у Підземних Джунглях.',desc:'Бос Джунглів. Три чергуючі фази: жала, спринт, удар. Отруює при контакті.',atk:['Стрільба отруйними жалами','Стрімкий спринт крізь гравця','Породження рою Бджіл (Майстерний)'],drops:['Пчолиний Жезл','Роговий лук','Пасічницька Шляпа','Мед (матеріал)'],g:{melee:{ar:'Тіньова або Розплавлена броня',wp:['Нічний Край','Золотий широкий меч'],ac:['Чоботи Гермеса','Обсидіановий щит'],st:'Будуй довгі горизонтальні платформи. Жала відносно повільні — бий між атаками. Коли спринтує — відходь вбік.'},ranged:{ar:'Золота або Тіньова броня',wp:['Роговий Лук + Роговий Шип Стріли','Золотий лук + Срібні стріли'],ac:['Чоботи Гермеса'],st:'Тримайся на платформах і постійно стріляй. Відходь при спринті та уникай рою бджіл.'},magic:{ar:'Тіньова броня',wp:['Водяний Болт — ідеально підходить','Метеоровий жезл'],ac:['Стрічка відновлення'],st:'Водяний Болт від підлоги б\'є постійно. Дуже ефективна тактика проти Бджоли.'},summon:{ar:'Тіньова броня',wp:['Жезл диявола','Зброя ближнього бою'],ac:['Чоботи Гермеса'],st:'Диявол атакує автоматично. Уникай жал і спринтів. Рій бджіл заважає — май зілля антиотрути.'}}},
+{id:6,name:'Скелетрон',en:'Skeletron',icon:'💀',phase:'pre',hp:{n:4400,e:6160,m:7700},def:10,summon:'Поговори зі Старим',cond:'Говори зі Старим Людиною у входу до Підземелля ВНОЧІ.',desc:'Охоронець Підземелля. Голова + дві руки. Вдень стає невразливим та вбиває одним ударом.',atk:['Руки атакують та блокують голову','Голова обертається та дашить','ВДЕНЬ — миттєва смерть (завершуй вночі!)'],drops:['Книга Черепів','Велика кістка','Шолом Скелетрона'],g:{melee:{ar:'Тіньова або Розплавлена броня',wp:['Нічний Край','Зоряна ярість'],ac:['Обсидіановий щит','Чоботи Гермеса'],st:'Спочатку знищ обидві руки — вони заважають. Потім — лише голова. Слідкуй за часом! Якщо є ризик дожити до дня — май Зілля телепортації.'},ranged:{ar:'Тіньова броня',wp:['Роговий Лук + Неземні стріли','Мушкет + Кулі'],ac:['Чоботи Гермеса'],st:'Стріляй постійно. Спершу по руках, потім по голові. Будуй платформи вище голови для маневрування.'},magic:{ar:'Тіньова броня',wp:['Водяний Болт','Метеоровий жезл'],ac:['Стрічка відновлення'],st:'Водяний Болт відскакує від підлоги та б\'є по голові й руках одночасно. Дуже ефективна тактика.'},summon:{ar:'Тіньова броня',wp:['Жезл диявола','Зброя ближнього бою для рук'],ac:['Чоботи Гермеса'],st:'Диявол атакує автоматично. Сам знищуй руки вручну для пришвидшення. Уникай обертань голови.'}}},
+{id:7,name:'Стіна Плоті',en:'Wall of Flesh',icon:'🔥',phase:'pre',hp:{n:8000,e:11200,m:14000},def:0,summon:'Лялька Гіда',cond:'Кинь Ляльку Гіда у лаву Підземного Світу. Потрібне тіло Гіда в інвентарі.',desc:'ОСТАННІЙ бос пре-хардмоду. Рухається через весь рівень. ПЕРЕМОГА = ХАРДМОД АКТИВОВАНИЙ.',atk:['Рух від однієї стіни до іншої — постійно','Голодні (Hungries) атакують гравця','Рот стріляє лазерами (при низькому HP)'],drops:['Молот Руйнівника','Пристрій Тесси','Механічні предмети','Бог Демонів Ключ (Expert)'],g:{melee:{ar:'Розплавлена броня',wp:['Нічний Край','Роговий Яресскоп'],ac:['Обсидіановий щит','Чоботи Гермеса'],st:'ОБОВ\'ЯЗКОВО будуй довгу платформу через весь Підземний Світ (3000+ блоків). Біжи від Стіни та атакуй очі знизу або збоку. Не зупиняйся!'},ranged:{ar:'Тіньова або Розплавлена броня',wp:['Мушкет або Блоусоробка + Кулі','Бум-бокс'],ac:['Чоботи Гермеса'],st:'Найкращий клас для цього боса. Біжи і стріляй назад — ідеально. Цілься в очі для швидшого вбивства.'},magic:{ar:'Тіньова броня',wp:['Метеоровий жезл + Небесний шолом (безкоштовна мана!)'],ac:['Чоботи Гермеса','Стрічка відновлення'],st:'Метеоровий жезл + Небесний шолом = БЕЗКОШТОВНІ постріли! Ця комбо дуже ефективна проти Стіни.'},summon:{ar:'Тіньова або Розплавлена броня',wp:['Жезл диявола','Нічний Край'],ac:['Чоботи Гермеса'],st:'Призов б\'є автоматично. Самому — бігти і уникати Голодних. Стіна прискорюється при низькому HP — будь готовий!'}}},
+{id:8,name:'Королева Слаймів',en:'Queen Slime',icon:'💗',phase:'hard',hp:{n:18000,e:25200,m:31500},def:0,summon:'Кристал Gelatin',cond:'Використай Кристал Gelatin у Святих Землях.',desc:'Перший необов\'язковий хм бос. Дві фази: підстрибуюча та летяча (форма метелика).',atk:['Стрибки та спавн міні-слаймів (Фаза 1)','Форма метелика + кристальні снаряди (Фаза 2)'],drops:['Кристалічні Крила','Желейна Нагорода','Печатка Королеви Слаймів'],g:{melee:{ar:'Адамантитова або Титанієва (Melee)',wp:['Ятаган Смерті','Нічний Край'],ac:['Адамантитові або кращі Крила','Зоряний плащ'],st:'Фаза 1 — платформи та уникання стрибків. Фаза 2 — лети та атакуй зверху, уникаючи кристальних пострілів.'},ranged:{ar:'Кобальтова / Адамантитова (Ranged)',wp:['Мега-акула + Кристалеві кулі','Повторник Орихалку'],ac:['Крила','Чоботи'],st:'Стріляй постійно на платформах. У Фазі 2 — стріляй по "очах" метелика.'},magic:{ar:'Мітрилова / Адамантитова (Magic)',wp:['Кристалічна буря','Золотий душ'],ac:['Крила','Кришталева куля (зварений баф)'],st:'Кристальна буря чудово б\'є обидві фази. Тримайся на платформах та стріляй безперервно.'},summon:{ar:'Адамантитова (Summon helmet)',wp:['Павутинний жезл + максимум слотів','Зброя ближнього бою'],ac:['Крила','Максимум слотів'],st:'Павуки чіпляються до слаймів. У Фазі 2 — допомагай у повітрі ближньою зброєю.'}}},
+{id:9,name:'Близнята',en:'The Twins',icon:'👀',phase:'hard',hp:{n:43000,e:60200,m:75250},def:0,summon:'Механічне Око',cond:'Виклич Механічним Оком або вони з\'являться самі вночі у Хардмоді.',desc:'Два механічних ока — Retinazer (лазери) та Spazmatism (вогонь). Обидва мають Фазу 2.',atk:['Retinazer: лазерні промені (Ф.1) → шквал лазерів (Ф.2)','Spazmatism: вогняні кулі (Ф.1) → Грецький вогонь (Ф.2)'],drops:['Душа Видіння (20-40)','Мозок розсіювання (Expert)'],g:{melee:{ar:'Адамантитова / Святобасна (Melee)',wp:['Ятаган Смерті','Скельні кігті (Fetid Baghnakhs)'],ac:['Крила','Якір Нерпи','Хрест нерозуміння'],st:'Концентруйся на одному — вбий Spazmatism першим (він небезпечніший у Ф.2). Тримайся в повітрі та атакуй при наближенні.'},ranged:{ar:'Адамантитова або Святобасна (Ranged)',wp:['Мега-акула + Кристалеві або Хлорофітові кулі'],ac:['Крила','Рейнджерська Емблема'],st:'Один з найкращих класів. Стріляй у Spazmatism постійно, потім Retinazer. Уникай лазерів боковими кроками.'},magic:{ar:'Адамантитова або Мітрилова (Magic)',wp:['Кристалічна буря','Заборонений Клинок'],ac:['Крила','Цвіт Чарівника'],st:'Кристалічна буря дуже ефективна. Тримайся далеко від Spazmatism у Ф.2 (Грецький вогонь дуже боляче).'},summon:{ar:'Адамантитова (Summon)',wp:['Павутинний жезл + максимум слотів','Зброя ближнього бою'],ac:['Крила','Максимум міньйонів'],st:'Павуки чіпляються до Близнят. Захищай себе від Грецького вогню та відслідковуй позицію кожного боса.'}}},
+{id:10,name:'Знищувач',en:'The Destroyer',icon:'🔩',phase:'hard',hp:{n:80000,e:112000,m:140000},def:30,summon:'Механічний Черв\'як',cond:'Виклич Механічним Черв\'яком або він з\'явиться вночі у Хардмоді.',desc:'Механічний Пожирач Світів. Масивний механічний хробак. Тіло випускає Зонди-лазери.',atk:['Переслідування гравця всюди','Зонди стріляють лазерами','Контактна шкода від тіла'],drops:['Душа Сили (20-40)','Механічні кишки (Expert)'],g:{melee:{ar:'Адамантитова або Святобасна (Melee)',wp:['Ятаган Смерті','Пристрій Thorn'],ac:['Крила','Залізна Пряжка'],st:'Будуй ДУЖЕ довгу платформу (400+ блоків). Бий голову або хвіст. Знищуй Зонди що заважають. Ятаган б\'є по багатьох сегментах.'},ranged:{ar:'Адамантитова (Ranged) або Святобасна',wp:['Мега-акула + Кристалеві або Хлорофітові кулі'],ac:['Крила','Рейнджерська Емблема','Пристрій Страстей'],st:'Ідеальний клас. Кулі пробивають сегменти. Великий DPS знищить боса за лічені хвилини.'},magic:{ar:'Мітрилова / Адамантитова (Magic)',wp:['Магічна гармата','Кристалічна буря'],ac:['Крила','Цвіт Чарівника','Кришталева куля'],st:'Магічна гармата б\'є по кількох сегментах. Стій на платформах та стріляй у голову.'},summon:{ar:'Адамантитова (Summon)',wp:['Опричний жезл','Зброя для атаки зондів'],ac:['Крила','Максимум слотів'],st:'Опричний жезл б\'є по кількох сегментах. Самостійно знищуй зонди — вони відволікають і наносять шкоду.'}}},
+{id:11,name:'Скелетрон Прайм',en:'Skeletron Prime',icon:'🤖',phase:'hard',hp:{n:28000,e:39200,m:49000},def:0,summon:'Механічний Череп',cond:'Виклич Механічним Черепом або він з\'явиться вночі у Хардмоді.',desc:'Механічний Скелетрон. Голова + 4 руки: гармата, кліщі, пила, лазер.',atk:['4 руки атакують різними способами','Голова обертається та дашить','Пила особливо небезпечна!'],drops:['Душа Жаху (20-40)','Спінений Мозок (Expert)'],g:{melee:{ar:'Святобасна або Черепашача',wp:['Ятаган Смерті','Кореневий Клинок'],ac:['Крила','Обсидіановий щит'],st:'Знищ руки в порядку: ПИЛА → Кліщі → Гармата → Лазер. Потім голова стає легкою мішенню. Уникай пили!'},ranged:{ar:'Адамантитова (Ranged) або Святобасна',wp:['Мега-акула','Повторник Орихалку'],ac:['Крила','Рейнджерська Емблема'],st:'Найкращий для знищення рук по черзі. Цілься в пилку першою — найнебезпечніша.'},magic:{ar:'Адамантитова / Святобасна (Magic)',wp:['Демонічний серп','Кристалічна буря'],ac:['Крила','Цвіт Чарівника'],st:'Серп завдає великої шкоди рукам. Уникай гармат з платформ. Бий руки по черзі.'},summon:{ar:'Адамантитова (Summon)',wp:['Опричний жезл','Зброя ближнього бою'],ac:['Крила','Максимум слотів'],st:'Опричний жезл допомагає з руками. Знищуй руки по черзі — спрощує фінальну фазу з головою.'}}},
+{id:12,name:'Планера',en:'Plantera',icon:'🌺',phase:'hard',hp:{n:30000,e:42000,m:52500},def:10,summon:'Цибулина Планери',cond:'Знищ рожеву Цибулину Планери в Підземних Джунглях (після перемоги над УСІМА мех-босами).',desc:'Перший пост-мех бос. Фаза 1: рослинна, повільна. Фаза 2: чорна, швидша з кислотними кулями.',atk:['Повільно тягнеться до гравця (Ф.1)','Прискорення + кислотні кулі + петлі (Ф.2)','Паростки атакують постійно'],drops:['Ключ Храму Джунглів','Довговязе Серце','Цупкий Браслет (Expert)'],g:{melee:{ar:'Черепашача або Жукова броня',wp:['Кореневий Клинок','Хлорофітова шабля'],ac:['Крила','Черепаший Щит','Зірковий плащ'],st:'Великий відкритий простір у Джунглях. У Ф.2 — рухайся по колу постійно. Черепашача броня відбиває шкоду назад — ефективно!'},ranged:{ar:'Шрумітова або Хлорофітова (Ranged)',wp:['Хлорофітовий дробовик','Снайперська гвинтівка'],ac:['Крила','Рейнджерська Емблема'],st:'Постійна стрільба та рух по колу. Уникай отруйних жал паростків. Відкрита арена — перевага.'},magic:{ar:'Мітрилова або Адамантитова (Magic)',wp:['Веселкова паличка','Магічна гармата','Золотий Душ'],ac:['Крила','Цвіт Чарівника'],st:'Магічна гармата з Адамантитовими болтами б\'є дуже сильно. Рухайся по колу у великій кімнаті.'},summon:{ar:'Хлорофітова або Чорна (Summon)',wp:['Опричний жезл','Ксено жезл (якщо є)'],ac:['Крила','Максимум слотів'],st:'Максимум призовів — б\'ють автоматично. Сам уникай паростків-хвостів. Відкрита кімната зручна для всіх призовів.'}}},
+{id:13,name:'Голем',en:'Golem',icon:'🪨',phase:'hard',hp:{n:24000,e:36000,m:45000},def:0,summon:'Силовий Камінь Лізахрда',cond:'Використай Силовий Камінь Лізахрда на Стародавньому Вівтарі в Храмі Джунглів.',desc:'Бос Храму Джунглів. Чотири кулаки + голова + лазери. Відносно простий після Планери.',atk:['Кулаки летять до гравця та повертаються','Лазери з очей голови','Стрибки та кидання голови (50% HP)'],drops:['Бетатест Клинок','Сонячна стріла','Пікель Пікасо'],g:{melee:{ar:'Жукова броня',wp:['Справжній нічний край','Кореневий Клинок'],ac:['Крила','Тотем бога','Залізна медаль'],st:'Бий кулаки або пряму голову. Жукова броня ідеальна. Замкнена кімната Храму — мало маневру, стій в кутку.'},ranged:{ar:'Шрумітова броня',wp:['Хлорофітовий дробовик','Мега-акула'],ac:['Крила','Рейнджерська Емблема'],st:'Стріляй у тіло — кулаки повертаються самі. Закрита кімната Храму зручна для стрільби з кутка.'},magic:{ar:'Хлорофітова (Magic)',wp:['Небулярна аркана','Золота Душа Фантастична'],ac:['Крила','Цвіт Чарівника'],st:'Кімната мала — ідеально для магії. Стій у кутку та стріляй безперервно по голові.'},summon:{ar:'Хлорофітова (Summon)',wp:['Ксено жезл','Опричний жезл'],ac:['Крила','Максимум слотів','Медвежий Зуб'],st:'Призов б\'є безперервно. Сам уникай кулаків — вони найбільша загроза. Закрита арена зручна для всіх призовів.'}}},
+{id:14,name:'Герцог Риброн',en:'Duke Fishron',icon:'🐡',phase:'hard',hp:{n:50000,e:70000,m:87500},def:50,summon:'Бурхова Приманка',cond:'Закинь Бурхову Приманку в Океан рибалочкою в Хардмоді.',desc:'Складний необов\'язковий бос. Три фази, Ф.3 — примарна форма. Дуже швидкий.',atk:['Стрімкий дашинг та стрільба бурею (Ф.1)','Прискорення + акулячі смерчі (Ф.2)','Примарна форма — швидка і смертельна (Ф.3)'],drops:['Крила Риброна','Бурховий Жезл','Тямуще Зілля Риброна'],g:{melee:{ar:'Жукова / Астральна Сонця',wp:['Клинок Землі','Небесна квітка'],ac:['Крила Риброна (після вбивства)','Зоряний плащ'],st:'Будуй пряму платформу над Океаном та рухайся постійно. У Ф.3 — знищ якомога швидше, він дуже сильний.'},ranged:{ar:'Шрумітова або Вортексна',wp:['Снайперська гвинтівка + Хлорофітові кулі','Фантазм (якщо є)'],ac:['Крила','Рейнджерська Емблема'],st:'Один з найкращих класів. У Ф.3 — знищ якомога швидше. Постійний рух по платформі.'},magic:{ar:'Небулярна',wp:['Остання призма (нічний Ф.3)','Небулярна аркана'],ac:['Крила','Цвіт Чарівника'],st:'Остання призма знищує Риброна дуже швидко. У Ф.3 — фокусуй лазери. Уникай акулячих вихорів.'},summon:{ar:'Зоряпиловий костюм',wp:['Зоряпиловий дракон','Тераприсма (якщо є)'],ac:['Крила','Максимум слотів'],st:'Дракон чудово б\'є. У Ф.3 — фокусуй атаки на примарній формі. Рухайся постійно і не зупиняйся.'}}},
+{id:15,name:'Цариця Світла',en:'Empress of Light',icon:'🦋',phase:'hard',hp:{n:70000,e:98000,m:122500},def:10,summon:'Прищмач Метеликів',cond:'Вбий Прищмача Метеликів (фіолетовий метелик) у Святих Землях ВНОЧІ після Планери.',desc:'Один з найскладніших необов\'язкових босів. ВДЕНЬ вбиває одним ударом. Нагорода за день — Тераприсма!',atk:['Веселковий меч-снаряд по колу','Вибухи та промені пастельних тонів','ВДЕНЬ — будь-яка атака = миттєва смерть!'],drops:['Сонячна Жезлова Зброя','Тераприсма (ТІЛЬКИ ВДЕНЬ, 100%)'],g:{melee:{ar:'Астральна Сонця',wp:['Зеніт (якщо є)','Небесна квітка'],ac:['Крила Риброна','Зоряний плащ'],st:'Вночі рухайся по колу та бий між атаками. Зеніт б\'є автоматично — ідеально. Вдень — майже неможливо мечем.'},ranged:{ar:'Вортексна броня',wp:['Фантазм + Освітлені стріли'],ac:['Крила Риброна','Рейнджерська Емблема'],st:'Вдень — лише Фантазм з ВЕЛИЧЕЗНИМ DPS. Вночі — стріляй у центр і уникай ВСІХ атак. Не зупиняйся жодної секунди.'},magic:{ar:'Небулярна',wp:['Остання призма (нічний бій)','Небулярна аркана'],ac:['Крила','Цвіт Чарівника','Небулярні таблетки'],st:'Вночі Остання призма дуже ефективна. Вдень — практично неможливо. Концентруй лазер точно на ній.'},summon:{ar:'Зоряпиловий костюм',wp:['Тераприсма (ТІЛЬКИ ВДЕНЬ!)','Зоряпиловий дракон (вночі)'],ac:['Крила','Максимум слотів'],st:'Тераприсма — нагорода за ДЕННИЙ бій. Вночі — Зоряписовий Дракон. Рухайся великим колом постійно.'}}},
+{id:16,name:'Фанатичний Культист',en:'Lunatic Cultist',icon:'🏮',phase:'hard',hp:{n:32000,e:44800,m:56000},def:2,summon:'Знищ культистів',cond:'Вбий 4 Культистів поруч зі Стародавнім Знаком у входу в Підземелля після перемоги над Големом.',desc:'Перший пост-Голем бос. Може творити клони — бий лише справжнього. Після — відкриваються Місячні Стовпи.',atk:['Телекінез та телепортація','Льодова буря та вогняні кулі','Плащ дракона (вогняний дракон)','Розмноження: знищуй ПРАВИЛЬНИЙ клон'],drops:['Стародавній Маніпулятор (КЛЮЧОВА крафтова станція ендгейму!)'],g:{melee:{ar:'Жукова/Астральна Сонця',wp:['Клинок Землі','Небесна квітка'],ac:['Крила','Зоряний плащ'],st:'Уникай клонів — бий лише справжнього (злегка темніший). Рухайся швидко та атакуй між телепортаціями.'},ranged:{ar:'Шрумітова / Вортексна',wp:['Фантазм','Снайперська гвинтівка'],ac:['Крила','Рейнджерська Емблема'],st:'Стріляй по справжньому — якщо клон, шкода не пройде. Одразу ідентифікуй та вогонь.'},magic:{ar:'Небулярна proto',wp:['Небулярна аркана','Остання призма'],ac:['Крила','Цвіт Чарівника'],st:'Уникай Дракона та дивись за правильним Культистом між клонами. Магічні атаки чудово підходять.'},summon:{ar:'Зоряпиловий',wp:['Зоряпиловий дракон','Зоряпилова клітина'],ac:['Крила','Максимум слотів'],st:'Призов б\'є правильного та клонів — перевіряй хто отримує шкоду. Самому лишається рухатись і уникати.'}}},
+{id:17,name:'Місячний Лорд',en:'Moon Lord',icon:'🌙',phase:'hard',hp:{n:145000,e:203000,m:253750},def:0,summon:'Місячні Стовпи',cond:'Знищ всі 4 Місячних Стовпи (Сонця, Вортекса, Небули, Зоряного Пилу) — Місячний Лорд з\'являється автоматично.',desc:'ФІНАЛЬНИЙ БОС ГРИ. Три очі (на руках + голові), серце та мозок. Найсильніший ворог Terraria.',atk:['True Eye of Cthulhu атакує лазерами на руках','Виривається з-під землі та переслідує','Фантасмагоричні осколки в усі сторони','Відновлення HP при відкритих очах'],drops:['Міяумер','Зоряний Гнів','Сонячні Молоти','Остання Призма','Фантазм','Зоряпиловий Дракон (жезл)','Зоряпилова Клітина (жезл)','Небесний Зореборд','Люмінітова руда'],g:{melee:{ar:'Астральна Сонця',wp:['Зеніт (якщо є)','Зоряний Гнів','Клинок Землі'],ac:['Небесний Зореборд','Зоряний плащ','Зброя Янголів'],st:'Бий ОЧІ на руках — особливо коли відкриваються (вразливі!). Потім — лобовий орган. Зеніт б\'є по всьому автоматично. Зілля витривалості та відновлення ОБОВ\'ЯЗКОВІ.'},ranged:{ar:'Вортексна броня',wp:['Фантазм + Освітлені стріли','Снайперська гвинтівка (очі в кризисі)'],ac:['Небесний Зореборд','Рейнджерська Емблема','Кристал ефірності'],st:'Фантазм б\'є по очах дуже ефективно. Уникай всіх атак та постійно рухайся. Освітлені стріли б\'ють по всіх частинах.'},magic:{ar:'Небулярна броня',wp:['Остання призма — фокусуй на очі','Небулярна аркана'],ac:['Небесний Зореборд','Цвіт Чарівника','Зілля Мани'],st:'Фокусуй Останню Призму на ВІДКРИТІ очі. Небулярні бафи значно підвищують шкоду. Завжди май Супер Зілля Мани.'},summon:{ar:'Зоряпиловий костюм',wp:['Тераприсма + максимум слотів','Зоряпиловий дракон'],ac:['Небесний Зореборд','Максимум міньйонів','Пес Некроманта'],st:'Максимум міньйонів + Тераприsma = величезний DPS. Самому уникай осколків та лазерів. Зоряний Страж захищає автоматично!'}}},
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const S={sec:'items',sub:'all',tf:'all',q:'',bi:0,bc:'melee'};
+
+// ══════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════
+function setSection(s){
+  S.sec=s;S.sub='all';S.tf='all';S.q='';
+  document.getElementById('srch').value='';
+  render();
+}
+function setSub(s){S.sub=s;render();}
+function setTf(t){S.tf=t;render();}
+function handleSearch(v){S.q=v;render();}
+function selectBoss(i){S.bi=i;render();}
+function setBc(c){S.bc=c;render();}
+
+function renderNav(){
+  // main buttons
+  document.querySelectorAll('#nm .nbtn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.s===S.sec);
+  });
+  const nw=document.getElementById('nw');
+  const hasSub=S.sec!=='achievements';
+  nw.classList.toggle('expanded',hasSub);
+  const ns=document.getElementById('ns');
+  if(!hasSub){ns.innerHTML='';return;}
+  const items=SUBNAV[S.sec]||[];
+  ns.innerHTML=`<button class="nbtn back" onclick="collapseNav()">Назад</button><div class="nav-sep"></div>${items.map(i=>`<button class="nbtn${S.sub===i.id?' sub-on':''}" onclick="setSub('${i.id}')">${i.l}</button>`).join('')}`;
+}
+
+function collapseNav(){
+  document.getElementById('nw').classList.remove('expanded');
+}
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function rcolor(r){return RC[Math.min(r,RC.length-1)]||'#ACACAC';}
+function statLine(it){
+  if(it.stats.dmg)return`<div class="istat">Шкода: <strong>${it.stats.dmg}</strong></div>`;
+  if(it.stats.def)return`<div class="istat">Захист: <strong>${it.stats.def}</strong></div>`;
+  if(it.stats.heal)return`<div class="istat">+HP: <strong>${it.stats.heal}</strong></div>`;
+  if(it.stats.pick)return`<div class="istat">Копання: <strong>${it.stats.pick}%</strong></div>`;
+  if(it.stats.mana)return`<div class="istat">+MP: <strong>${it.stats.mana}</strong></div>`;
+  return'';
+}
+function typeTag(t){
+  if(t==='placeable')return`<span class="tag tp">Блок</span>`;
+  if(t==='usable')return`<span class="tag tu">Предмет</span>`;
+  return`<span class="tag tp">Обидва</span>`;
+}
+function subTag(sc){
+  if(!sc)return'';
+  return`<span class="tag ts">${SUB[sc]||sc}</span>`;
+}
+
+// ══════════════════════════════════════════════
+//  ITEM CARD
+// ══════════════════════════════════════════════
+function icard(it){
+  const col=rcolor(it.rar);
+  return`<div class="ic" style="--rc:${col}" onclick="openItem(${it.id})">
+<div class="ii">${it.icon}</div>
+<div class="iname">${it.name}</div>
+<div class="ien">${it.en}</div>
+<div class="itags"><span class="tag tc">${CAT[it.cat]||it.cat}</span>${typeTag(it.type)}${subTag(it.subcat)}</div>
+${statLine(it)}
+</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  OPEN ITEM MODAL
+// ══════════════════════════════════════════════
+function openItem(id){
+  const it=ITEMS.find(x=>x.id===id);
+  if(!it)return;
+  const col=rcolor(it.rar);
+  const statsHtml=Object.entries(it.stats||{}).filter(([k])=>k!=='bonus').map(([k,v])=>{
+    const lbl={dmg:'Шкода',def:'Захист',heal:'+HP',mana:'+MP',pick:'Копання',spd:'Швидкість',crit:'Крит%',kb:'Відкидання',duration:'Тривалість',cooldown:'Перезарядка',regen:'Відновлення/сек',dmgRed:'Зменш. шкоди',fly:'Час польоту'};
+    const u={pick:'%',crit:'%',spd:'%',dmgRed:'%',duration:' сек',cooldown:' сек'};
+    const cl=k==='def'||k==='heal'?'g':k==='dmg'?'r':k==='pick'||k==='spd'?'o':'b';
+    const display=typeof v==='boolean'?'✓':v;
+    return`<div class="si"><div class="sl">${lbl[k]||k}</div><div class="sv ${cl}">${display}${u[k]||''}</div></div>`;
+  }).join('');
+  const bonus=it.stats?.bonus?`<div class="msec"><h4>Бонус набору</h4><div class="dbox">${it.stats.bonus}</div></div>`:'';
+  const recipe=(()=>{
+    const c=CRAFTS.find(x=>x.res===it.name);
+    if(!c)return'';
+    const ings=c.ing.map(g=>`<div class="ri"><span>${g.ic}</span><span>${g.n}</span><span class="riamt">×${g.a}</span></div>`).join('');
+    return`<div class="msec"><h4>Рецепт крафту</h4><div class="rbox"><div class="rstn">📍 ${STN[c.stn]||c.stn}</div><div class="rflow">${ings}<span class="rarrow">→</span><div class="rres">${it.icon} ${it.name} <span class="riamt">×${c.amt}</span></div></div></div></div>`;
+  })();
+  const mb=document.getElementById('mb');
+  mb.innerHTML=`<button class="mcl" onclick="closeOv()">✕</button>
+<div class="mhdr"><div class="mbig" style="box-shadow:0 0 24px ${col}33">${it.icon}</div>
+<div class="mtitles"><div class="mname">${it.name}</div><div class="men">${it.en}</div>
+<span class="rtag" style="color:${col}">${RN[Math.min(it.rar,RN.length-1)]||'Звичайна'}</span></div></div>
+${statsHtml?`<div class="msec"><h4>Характеристики</h4><div class="sgrid">${statsHtml}</div></div>`:''}
+${bonus}
+<div class="msec"><h4>Опис</h4><div class="dbox">${it.desc}</div>${it.tip?`<div class="tipbox">💬 "${it.tip}"</div>`:''}</div>
+<div class="msec"><h4>Інформація</h4><div class="sgrid">
+<div class="si"><div class="sl">Категорія</div><div class="sv b" style="font-size:14px">${CAT[it.cat]||it.cat}</div></div>
+<div class="si"><div class="sl">Тип</div><div class="sv g" style="font-size:13px">${it.type==='placeable'?'🧱 Блок':it.type==='usable'?'⚡ Предмет':'🔄 Обидва'}</div></div>
+<div class="si"><div class="sl">Стек</div><div class="sv" style="font-size:14px">${it.stack}</div></div>
+<div class="si"><div class="sl">Рідкісність</div><div class="sv" style="font-size:14px;color:${col}">${it.rar} — ${RN[it.rar]||'?'}</div></div>
+</div></div>
+${recipe}
+${it.tags?.length?`<div class="msec"><h4>Теги</h4><div style="display:flex;flex-wrap:wrap;gap:5px">${it.tags.map(t=>`<span class="tag tc">${t}</span>`).join('')}</div></div>`:''}`
+  document.getElementById('ov').classList.add('open');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER ITEMS
+// ══════════════════════════════════════════════
+function filterItems(){
+  let list=ITEMS;
+  if(S.sub!=='all')list=list.filter(i=>i.cat===S.sub);
+  if(S.tf==='placeable')list=list.filter(i=>i.type==='placeable'||i.type==='both');
+  if(S.tf==='usable')list=list.filter(i=>i.type==='usable'||i.type==='both');
+  return list;
+}
+function renderItems(root){
+  const list=filterItems();
+  root.innerHTML=`<div class="ph">
+<h1 class="pt">Предмети <span>Terraria</span><span class="badge">${list.length}</span></h1>
+<p class="ps">Натисни на предмет для детальної інформації та рецепту крафту</p></div>
+<div class="frow">
+<button class="fc${S.tf==='all'?' on':''}" onclick="setTf('all')">🌐 Всі</button>
+<button class="fc${S.tf==='placeable'?' on-g':''}" onclick="setTf('placeable')">🧱 Блоки (розміщуються)</button>
+<button class="fc${S.tf==='usable'?' on-g':''}" onclick="setTf('usable')">⚡ Предмети (використання)</button>
+</div>
+<div class="grid">${list.map(icard).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  RENDER CRAFTS
+// ══════════════════════════════════════════════
+function renderCrafts(root){
+  let list=CRAFTS;
+  if(S.sub!=='all')list=list.filter(c=>c.stn===S.sub);
+  root.innerHTML=`<div class="ph"><h1 class="pt">Крафти<span class="badge">${list.length}</span></h1><p class="ps">Фільтруй по крафтовій станції. Натисни на крафт для деталей предмету.</p></div>
+<div class="clist">${list.map(c=>{
+  const ings=c.ing.map(g=>`<div class="cchip"><span>${g.ic}</span><span>${g.n}</span><span class="camt">×${g.a}</span></div>`).join('');
+  const it=ITEMS.find(x=>x.name===c.res);
+  return`<div class="cc" onclick="openItem(${it?.id||0})">
+<div class="cch"><div class="cci">${c.ri||'📦'}</div><div><div class="ccn">${c.res} <span style="color:var(--ac);font-size:11px">×${c.amt}</span></div><div class="ccs">📍 ${STN[c.stn]||c.stn}</div></div></div>
+<div class="cflow">${ings}<span class="rarrow">→</span><div class="cchip" style="background:rgba(62,141,204,.1);border-color:var(--acd)">${c.ri||'📦'} ${c.res} <span class="camt">×${c.amt}</span></div></div>
+${c.desc?`<div class="cdesc">💡 ${c.desc}</div>`:''}</div>`;}).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  RENDER ACHIEVEMENTS
+// ══════════════════════════════════════════════
+function renderAchievements(root){
+  const dl={e:'Легке',m:'Середнє',h:'Складне',x:'Ексеперт'};
+  const dc={e:'de',m:'dm',h:'dh',x:'dx'};
+  root.innerHTML=`<div class="ph"><h1 class="pt">Досягнення <span>Terraria</span><span class="badge">${ACHS.length}</span></h1><p class="ps">Всі досягнення та як їх отримати. Пошук працює у рядку вгорі.</p></div>
+<div class="agrid">${ACHS.map(a=>`<div class="ac2">
+<div class="ai">${a.icon}</div>
+<div class="acont">
+<div class="an">${a.name} <span style="color:var(--td);font-size:9px;font-style:italic">${a.en}</span></div>
+<div class="ad">${a.desc}</div>
+<div class="ah">${a.how}</div>
+<span class="adiff ${dc[a.diff]||'de'}">${dl[a.diff]||a.diff}</span>
+</div></div>`).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  RENDER BOSSES
+// ══════════════════════════════════════════════
+function renderBosses(root){
+  const boss=BOSSES[S.bi]||BOSSES[0];
+  const g=boss.g[S.bc];
+  const sidebar=BOSSES.map((b,i)=>`<div class="bi${S.bi===i?' on':''}" onclick="selectBoss(${i})"><span class="bico">${b.icon}</span>${b.name}</div>`);
+  const preList=BOSSES.filter(b=>b.phase==='pre');
+  const hardList=BOSSES.filter(b=>b.phase==='hard');
+  root.innerHTML=`<div class="ph"><h1 class="pt">Гайди до <span>Босів</span></h1><p class="ps">Стратегії для кожного класу. Вибери боса та клас.</p></div>
+<div class="bl">
+<div class="bsb">
+<div class="bsbh">Всі боси (${BOSSES.length})</div>
+<div class="bslbl">🌱 Пре-Хардмод</div>
+${preList.map(b=>`<div class="bi${S.bi===BOSSES.indexOf(b)?' on':''}" onclick="selectBoss(${BOSSES.indexOf(b)})"><span class="bico">${b.icon}</span>${b.name}</div>`).join('')}
+<hr class="bsdiv">
+<div class="bslbl">🔥 Хардмод</div>
+${hardList.map(b=>`<div class="bi${S.bi===BOSSES.indexOf(b)?' on':''}" onclick="selectBoss(${BOSSES.indexOf(b)})"><span class="bico">${b.icon}</span>${b.name}</div>`).join('')}
+</div>
+<div class="bdet">
+<div class="bhero">
+  <div class="bbig">${boss.icon}</div>
+  <div class="bmeta">
+    <div class="bname">${boss.name}</div>
+    <div class="bnen">${boss.en}</div>
+    <span class="bph ${boss.phase==='pre'?'bpr':'bhm'}">${boss.phase==='pre'?'Пре-Хардмод':'Хардмод'}</span>
+    <div class="bsr">
+      <span class="bchp">HP Норм: <strong>${boss.hp.n.toLocaleString()}</strong></span>
+      <span class="bchp">Експерт: <strong>${boss.hp.e.toLocaleString()}</strong></span>
+      <span class="bchp">Майстер: <strong>${boss.hp.m.toLocaleString()}</strong></span>
+      <span class="bchp">Захист: <strong>${boss.def}</strong></span>
+    </div>
+  </div>
+</div>
+<div class="bsum">📌 <strong>Виклик:</strong> ${boss.summon} — ${boss.cond}</div>
+<div class="batk"><div class="slbl" style="padding:0;margin:0 0 10px">Атаки</div>${boss.atk.map(a=>`<div class="ba"><strong>⚡ </strong>${a}</div>`).join('')}</div>
+<div class="bdrop"><div class="slbl" style="padding:0;margin:0 0 8px">Дропи</div><div class="dlist">${boss.drops.map(d=>`<span class="dch">💎 ${d}</span>`).join('')}</div></div>
+<div class="ctabs">
+  <div class="ctab${S.bc==='melee'?' on':''}" data-c="melee" onclick="setBc('melee')">⚔️ Ближній</div>
+  <div class="ctab${S.bc==='ranged'?' on':''}" data-c="ranged" onclick="setBc('ranged')">🏹 Дальній</div>
+  <div class="ctab${S.bc==='magic'?' on':''}" data-c="magic" onclick="setBc('magic')">🔮 Магія</div>
+  <div class="ctab${S.bc==='summon'?' on':''}" data-c="summon" onclick="setBc('summon')">👾 Призов</div>
+</div>
+<div class="gg">
+  <div class="gs"><h4>🛡️ Рекомендована броня</h4><div class="gchips"><div class="gch">${g.ar}</div></div></div>
+  <div class="gs"><h4>⚔️ Рекомендована зброя</h4><div class="gchips">${g.wp.map(w=>`<div class="gch">${w}</div>`).join('')}</div></div>
+  <div class="gs"><h4>💍 Аксесуари</h4><div class="gchips">${g.ac.map(a=>`<div class="gch">${a}</div>`).join('')}</div></div>
+  <div class="gs"><h4>📋 Стратегія</h4><div class="gstr">${g.st}</div></div>
+</div>
+</div>
+</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════════════
+function renderSearch(root,q){
+  const ql=q.toLowerCase();
+  const fi=ITEMS.filter(i=>i.name.toLowerCase().includes(ql)||i.en.toLowerCase().includes(ql)||(i.tags||[]).some(t=>t.includes(ql))||(i.desc||'').toLowerCase().includes(ql));
+  const fc=CRAFTS.filter(c=>c.res.toLowerCase().includes(ql)||c.ing.some(g=>g.n.toLowerCase().includes(ql)));
+  const fa=ACHS.filter(a=>a.name.toLowerCase().includes(ql)||a.desc.toLowerCase().includes(ql)||a.en.toLowerCase().includes(ql)||(a.how||'').toLowerCase().includes(ql));
+  const fb=BOSSES.filter(b=>b.name.toLowerCase().includes(ql)||b.en.toLowerCase().includes(ql));
+  const total=fi.length+fc.length+fa.length+fb.length;
+  const dl={e:'Легке',m:'Середнє',h:'Складне',x:'Ексеперт'};
+  const dc={e:'de',m:'dm',h:'dh',x:'dx'};
+  root.innerHTML=`<div class="ph"><h1 class="pt">Пошук: <span>"${q}"</span></h1><p class="ps">Знайдено ${total} результатів: предмети (${fi.length}) · крафти (${fc.length}) · досягнення (${fa.length}) · боси (${fb.length})</p></div>
+${fi.length?`<div class="slbl">⚔️ Предмети (${fi.length})</div><div class="grid" style="margin-bottom:28px">${fi.map(icard).join('')}</div>`:''}
+${fc.length?`<div class="slbl">🔨 Крафти (${fc.length})</div><div class="clist" style="margin-bottom:28px">${fc.map(c=>{const ings=c.ing.map(g=>`<div class="cchip"><span>${g.ic}</span><span>${g.n}</span><span class="camt">×${g.a}</span></div>`).join('');const it=ITEMS.find(x=>x.name===c.res);return`<div class="cc" onclick="openItem(${it?.id||0})"><div class="cch"><div class="cci">${c.ri||'📦'}</div><div><div class="ccn">${c.res} ×${c.amt}</div><div class="ccs">📍 ${STN[c.stn]||c.stn}</div></div></div><div class="cflow">${ings}<span class="rarrow">→</span><div class="cchip" style="background:rgba(62,141,204,.1);border-color:var(--acd)">${c.ri||'📦'} ${c.res}</div></div></div>`;}).join('')}</div>`:''}
+${fa.length?`<div class="slbl">🏆 Досягнення (${fa.length})</div><div class="agrid" style="margin-bottom:28px">${fa.map(a=>`<div class="ac2"><div class="ai">${a.icon}</div><div class="acont"><div class="an">${a.name}</div><div class="ad">${a.desc}</div><div class="ah">${a.how}</div><span class="adiff ${dc[a.diff]||'de'}">${dl[a.diff]||a.diff}</span></div></div>`).join('')}</div>`:''}
+${fb.length?`<div class="slbl">👾 Боси (${fb.length})</div><div class="grid">${fb.map(b=>`<div class="ic" style="--rc:${b.phase==='pre'?'#42C46E':'#CC7830'}" onclick="selectBoss(${BOSSES.indexOf(b)});setSection('bosses')"><div class="ii">${b.icon}</div><div class="iname">${b.name}</div><div class="ien">${b.en}</div><div class="itags"><span class="tag ${b.phase==='pre'?'tu':'ts'}">${b.phase==='pre'?'Пре-Хм':'Хардмод'}</span></div><div class="istat">HP: <strong>${b.hp.n.toLocaleString()}</strong></div></div>`).join('')}</div>`:''}
+${!total?`<div class="empty"><div class="empty-ico">🔍</div><h3>Нічого не знайдено</h3><p>Спробуй інший запит. Наприклад: "золото", "ближній", "хардмод"</p></div>`:''}`;
+}
+
+// ══════════════════════════════════════════════
+//  OVERLAY
+// ══════════════════════════════════════════════
+function closeOv(e){
+  if(!e||e.target===document.getElementById('ov')){
+    document.getElementById('ov').classList.remove('open');
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv();});
+
+// ══════════════════════════════════════════════
+//  MAIN RENDER
+// ══════════════════════════════════════════════
+function render(){
+  renderNav();
+  const root=document.getElementById('root');
+  if(S.q.length>1){renderSearch(root,S.q);return;}
+  if(S.sec==='items')renderItems(root);
+  else if(S.sec==='crafts')renderCrafts(root);
+  else if(S.sec==='achievements')renderAchievements(root);
+  else if(S.sec==='bosses')renderBosses(root);
+}
+
+render();
+</script>
+</body>
+</html>
